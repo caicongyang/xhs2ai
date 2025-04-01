@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信公众号封面设计</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 3.35/1;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .main-cover {
+            flex: 2.35;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+            color: white;
+        }
+        
+        .emoji {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        
+        .title {
+            font-size: 3.5vw;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .subtitle {
+            font-size: 1.5vw;
+            font-weight: 500;
+            max-width: 80%;
+            line-height: 1.4;
+            z-index: 2;
+        }
+        
+        .circle-shape {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            right: -100px;
+            bottom: -100px;
+            z-index: 1;
+        }
+        
+        .share-cover {
+            flex: 1;
+            aspect-ratio: 1/1;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .share-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3vw;
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .download-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+            color: #f5576c;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                aspect-ratio: 1/1.5;
+            }
+            
+            .main-cover {
+                flex: 1;
+                aspect-ratio: 1/1;
+            }
+            
+            .share-cover {
+                flex: 0.5;
+            }
+            
+            .title {
+                font-size: 6vw;
+            }
+            
+            .subtitle {
+                font-size: 3vw;
+            }
+            
+            .share-text {
+                font-size: 5vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-cover">
+            <img src="https://s2.loli.net/2025/03/24/pBmlncEYkodSVA6.png" alt="Emoji" class="emoji">
+            <h1 class="title">一套提示词帮你实现小红书、公众号封面自由</h1>
+            <p class="subtitle">Deepseek V3也能用！</p>
+            <div class="circle-shape"></div>
+        </div>
+        <div class="share-cover">
+            <div class="share-text">一套</div>
+            <div class="share-text">提示</div>
+            <div class="share-text">词帮</div>
+            <div class="share-text">你</div>
+            <div class="circle-shape" style="right: -150px; bottom: -150px;"></div>
+        </div>
+        <button class="download-btn" onclick="downloadImage()">下载封面</button>
+    </div>
+
+    <script>
+        function downloadImage() {
+            // 在实际应用中，这里应该实现图片下载功能
+            // 由于浏览器安全限制，纯前端无法直接下载组合图片
+            // 通常需要后端服务或使用第三方库如html2canvas
+            
+            alert('在实际应用中，这里会实现图片下载功能。\n\n由于浏览器安全限制，纯前端演示无法直接下载组合图片。\n\n建议截图保存或在实际项目中实现html2canvas下载功能。');
+            
+            // 实际实现示例 (需要引入html2canvas库):
+            /*
+            html2canvas(document.querySelector('.container')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '公众号封面.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+            */
+        }
+    </script>
+</body>
+</html>
