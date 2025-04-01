@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# For development, we'll mount the source code from the host
+# So no need to copy the rest of the files here
+
+# Expose development port
+EXPOSE 3000
+
+# Start development server with hot reloading
+CMD ["npm", "run", "dev"] 

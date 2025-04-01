@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Web frontend service (development mode)
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    container_name: xhs2ai-web-dev
+    restart: unless-stopped
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    command: npm run dev
+    networks:
+      - xhs2ai-network
+
+  # Backend server service (development mode)
+  server:
+    build:
+      context: ./server
+    container_name: xhs2ai-server-dev
+    restart: unless-stopped
+    volumes:
+      - ./server:/app
+      - server_outputs:/app/outputs
+      - server_templates:/app/templates
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_BASE_URL=${LLM_BASE_URL}
+    command: uvicorn api_service:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - xhs2ai-network
+
+networks:
+  xhs2ai-network:
+    driver: bridge
+
+volumes:
+  server_outputs:
+  server_templates: 
