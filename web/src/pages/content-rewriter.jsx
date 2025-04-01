@@ -1,240 +1,233 @@
 import React, { useState } from 'react';
 import { Layout } from '../components/Layout';
-import { Button } from '../components/ui/button';
-import { Textarea } from '../components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Button } from '../components/ui/button';
+import { Label } from '../components/ui/label';
+import apiService from '../api/apiService';
 
 export default function ContentRewriterPage() {
-  const [originalContent, setOriginalContent] = useState('');
-  const [rewrittenContent, setRewrittenContent] = useState('');
-  const [tone, setTone] = useState('Professional');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [history, setHistory] = useState([]);
+  // URL重写状态
+  const [url, setUrl] = useState('');
+  const [isUrlProcessing, setIsUrlProcessing] = useState(false);
+  const [urlResult, setUrlResult] = useState(null);
+  const [urlError, setUrlError] = useState('');
+  
+  // 风格重写状态
+  const [styleContent, setStyleContent] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('xiaohongshu');
+  const [isStyleProcessing, setIsStyleProcessing] = useState(false);
+  const [styledResult, setStyledResult] = useState('');
+  const [styleError, setStyleError] = useState('');
 
-  const toneOptions = [
-    'Professional', 
-    'Casual', 
-    'Formal', 
-    'Creative', 
-    'Persuasive', 
-    'Technical'
-  ];
-
-  const handleSubmit = (e) => {
+  // 提交URL内容重写请求
+  const handleUrlSubmit = async (e) => {
     e.preventDefault();
-    setIsProcessing(true);
+    setIsUrlProcessing(true);
+    setUrlResult(null);
+    setUrlError('');
     
-    // Mock API call simulation
-    setTimeout(() => {
-      // This is a simple mock rewrite function that would be replaced by actual AI API
-      const mockRewriteText = () => {
-        // Just some simple replacements to simulate rewriting
-        if (tone === 'Professional') {
-          let rewritten = originalContent
-            .replace(/good/gi, 'excellent')
-            .replace(/bad/gi, 'suboptimal')
-            .replace(/big/gi, 'substantial')
-            .replace(/small/gi, 'minimal')
-            .replace(/I think/gi, 'Research indicates')
-            .replace(/very/gi, 'significantly');
-          
-          return rewritten + "\n\n[This content has been professionally rewritten by AI Content Studio]";
-        } else if (tone === 'Casual') {
-          let rewritten = originalContent
-            .replace(/excellent/gi, 'awesome')
-            .replace(/require/gi, 'need')
-            .replace(/obtain/gi, 'get')
-            .replace(/additional/gi, 'extra')
-            .replace(/however/gi, 'but')
-            .replace(/therefore/gi, 'so');
-          
-          return rewritten + "\n\n[This content has been casually rewritten by AI Content Studio]";
-        } else {
-          // For other tones, just return with a note
-          return originalContent + "\n\n[This content has been rewritten in " + tone + " tone by AI Content Studio]";
-        }
-      };
-      
-      const result = mockRewriteText();
-      setRewrittenContent(result);
-      
-      // Add to history
-      const historyItem = {
-        id: Date.now(),
-        originalContent: originalContent.substring(0, 100) + (originalContent.length > 100 ? '...' : ''),
-        rewrittenContent: result.substring(0, 100) + (result.length > 100 ? '...' : ''),
-        tone,
-        date: new Date().toISOString()
-      };
-      
-      setHistory([historyItem, ...history]);
-      setIsProcessing(false);
-    }, 2000);
+    try {
+      const result = await apiService.content.rewriteUrlContent(url);
+      if (result && result.success) {
+        setUrlResult(result.result);
+      } else {
+        setUrlError('处理URL内容失败');
+      }
+    } catch (error) {
+      console.error('URL内容重写失败:', error);
+      setUrlError('URL内容重写失败: ' + (error.message || '未知错误'));
+    } finally {
+      setIsUrlProcessing(false);
+    }
+  };
+  
+  // 提交风格重写请求
+  const handleStyleSubmit = async (e) => {
+    e.preventDefault();
+    setIsStyleProcessing(true);
+    setStyledResult('');
+    setStyleError('');
+    
+    try {
+      const result = await apiService.content.rewriteContentStyle(styleContent, selectedStyle);
+      if (result && result.success) {
+        setStyledResult(result.styled_content);
+      } else {
+        setStyleError('内容风格重写失败');
+      }
+    } catch (error) {
+      console.error('内容风格重写失败:', error);
+      setStyleError('内容风格重写失败: ' + (error.message || '未知错误'));
+    } finally {
+      setIsStyleProcessing(false);
+    }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Content copied to clipboard!');
-    });
-  };
+  // 风格选项
+  const styleOptions = [
+    { id: 'xiaohongshu', name: '小红书风格', description: '轻松活泼、带有表情符号的风格' },
+    { id: 'professional', name: '专业风格', description: '正式、专业的商务风格' },
+    { id: 'academic', name: '学术风格', description: '严谨、引用丰富的学术风格' },
+    { id: 'conversational', name: '对话风格', description: '轻松、口语化的对话风格' },
+    { id: 'poetic', name: '诗意风格', description: '优美、富有意境的文学风格' }
+  ];
 
   return (
     <Layout>
       {/* Hero Section */}
       <section className="hero-section bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-        <h1 className="hero-title">AI Content Rewriter</h1>
-        <p className="hero-subtitle">Transform your text with AI while maintaining your original message</p>
+        <h1 className="hero-title">AI 内容重写器</h1>
+        <p className="hero-subtitle">通过AI技术优化您的内容，支持URL提取和风格转换</p>
       </section>
-
+      
       {/* Main Content */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-5xl">
-          <Tabs defaultValue="rewrite" className="w-full">
+          <Tabs defaultValue="url-content" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="rewrite">Rewrite Content</TabsTrigger>
-              <TabsTrigger value="history">Rewrite History</TabsTrigger>
+              <TabsTrigger value="url-content">URL内容重写</TabsTrigger>
+              <TabsTrigger value="style-rewrite">内容风格转换</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="rewrite" className="space-y-6">
+            
+            {/* URL内容重写 */}
+            <TabsContent value="url-content" className="space-y-8">
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
-                <h2 className="text-2xl font-bold mb-6">Rewrite Your Content</h2>
+                <h2 className="text-2xl font-bold mb-6">提取并重写URL内容</h2>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleUrlSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <label htmlFor="original-content" className="block text-sm font-medium">
-                      Original Content
-                    </label>
-                    <Textarea
-                      id="original-content"
-                      placeholder="Paste your content here to be rewritten..."
-                      value={originalContent}
-                      onChange={(e) => setOriginalContent(e.target.value)}
-                      className="min-h-[200px]"
+                    <Label htmlFor="url-input">内容链接</Label>
+                    <Input
+                      id="url-input"
+                      placeholder="输入文章的URL..."
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
                       required
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Tone
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {toneOptions.map((option) => (
-                        <Button
-                          key={option}
-                          type="button"
-                          variant={tone === option ? "default" : "outline"}
-                          onClick={() => setTone(option)}
-                          className="text-sm"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
+                  
                   <Button 
                     type="submit" 
                     variant="apple" 
                     className="w-full" 
-                    disabled={!originalContent || isProcessing}
+                    disabled={!url || isUrlProcessing}
                   >
-                    {isProcessing ? "Processing..." : "Rewrite Content"}
+                    {isUrlProcessing ? "处理中..." : "提取并重写内容"}
                   </Button>
                 </form>
+                
+                {urlError && (
+                  <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-md">
+                    {urlError}
+                  </div>
+                )}
+                
+                {urlResult && (
+                  <div className="mt-6 space-y-4">
+                    <h3 className="text-xl font-semibold">{urlResult.title}</h3>
+                    
+                    <div className="border-t pt-4">
+                      <div className="prose dark:prose-invert max-w-none">
+                        <div dangerouslySetInnerHTML={{ __html: urlResult.content.replace(/\n/g, '<br/>') }} />
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          navigator.clipboard.writeText(urlResult.content)
+                            .then(() => alert('内容已复制到剪贴板'))
+                            .catch(err => console.error('复制失败:', err));
+                        }}
+                      >
+                        复制内容
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {rewrittenContent && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Rewritten Content</h2>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => copyToClipboard(rewrittenContent)}
-                    >
-                      Copy
-                    </Button>
+            </TabsContent>
+            
+            {/* 内容风格转换 */}
+            <TabsContent value="style-rewrite" className="space-y-8">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
+                <h2 className="text-2xl font-bold mb-6">内容风格转换</h2>
+                
+                <form onSubmit={handleStyleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="content-input">原始内容</Label>
+                    <Textarea
+                      id="content-input"
+                      placeholder="输入需要转换风格的内容..."
+                      value={styleContent}
+                      onChange={(e) => setStyleContent(e.target.value)}
+                      className="min-h-[200px]"
+                      required
+                    />
                   </div>
                   
-                  <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg whitespace-pre-wrap">
-                    {rewrittenContent}
+                  <div className="space-y-2">
+                    <Label htmlFor="style-select">目标风格</Label>
+                    <select
+                      id="style-select"
+                      value={selectedStyle}
+                      onChange={(e) => setSelectedStyle(e.target.value)}
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      {styleOptions.map((style) => (
+                        <option key={style.id} value={style.id}>
+                          {style.name} - {style.description}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="history">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
-                <h2 className="text-2xl font-bold mb-6">Rewrite History</h2>
+                  
+                  <Button 
+                    type="submit" 
+                    variant="apple" 
+                    className="w-full" 
+                    disabled={!styleContent || isStyleProcessing}
+                  >
+                    {isStyleProcessing ? "转换中..." : "转换内容风格"}
+                  </Button>
+                </form>
                 
-                {history.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">You haven't rewritten any content yet.</p>
-                    <p className="text-gray-500 dark:text-gray-400 mt-2">Rewrite content to see your history here.</p>
+                {styleError && (
+                  <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-md">
+                    {styleError}
                   </div>
-                ) : (
-                  <ul className="space-y-6">
-                    {history.map((item) => (
-                      <li key={item.id} className="border rounded-lg overflow-hidden">
-                        <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 flex justify-between items-center">
-                          <div>
-                            <span className="inline-block px-2 py-1 text-xs rounded bg-gray-200 dark:bg-gray-600 mr-2">
-                              {item.tone}
-                            </span>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {new Date(item.date).toLocaleString()}
-                            </span>
-                          </div>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => copyToClipboard(item.rewrittenContent)}
-                          >
-                            Copy
-                          </Button>
-                        </div>
-                        <div className="p-4 grid md:grid-cols-2 gap-4">
-                          <div>
-                            <h3 className="text-sm font-medium mb-2">Original</h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm">{item.originalContent}</p>
-                          </div>
-                          <div>
-                            <h3 className="text-sm font-medium mb-2">Rewritten</h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm">{item.rewrittenContent}</p>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                )}
+                
+                {styledResult && (
+                  <div className="mt-6 space-y-4">
+                    <h3 className="text-xl font-semibold">转换结果</h3>
+                    
+                    <div className="border-t pt-4">
+                      <div className="prose dark:prose-invert max-w-none">
+                        <div dangerouslySetInnerHTML={{ __html: styledResult.replace(/\n/g, '<br/>') }} />
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          navigator.clipboard.writeText(styledResult)
+                            .then(() => alert('内容已复制到剪贴板'))
+                            .catch(err => console.error('复制失败:', err));
+                        }}
+                      >
+                        复制内容
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             </TabsContent>
           </Tabs>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-12 px-4 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto max-w-5xl">
-          <h2 className="text-2xl font-bold mb-8 text-center">Features</h2>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Preserve Meaning</h3>
-              <p className="text-gray-600 dark:text-gray-300">Our AI maintains the original meaning of your content while improving the writing style.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Multiple Tones</h3>
-              <p className="text-gray-600 dark:text-gray-300">Choose from various tones to match your brand voice and target audience.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Eliminate Plagiarism</h3>
-              <p className="text-gray-600 dark:text-gray-300">Create unique content that passes plagiarism checks while retaining your original ideas.</p>
-            </div>
-          </div>
         </div>
       </section>
     </Layout>

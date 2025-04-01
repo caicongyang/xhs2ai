@@ -3,206 +3,158 @@ import { Layout } from '../components/Layout';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import { Card, CardContent } from '../components/ui/card';
+import { Label } from '../components/ui/label';
+import apiService from '../api/apiService';
 
-export default function TitleGeneratorPage() {
-  const [topic, setTopic] = useState('');
-  const [keywords, setKeywords] = useState('');
-  const [style, setStyle] = useState('Professional');
-  const [generatedTitles, setGeneratedTitles] = useState([]);
+export default function TitleRewriterPage() {
+  const [title, setTitle] = useState('');
+  const [titleStyle, setTitleStyle] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [savedTitles, setSavedTitles] = useState([]);
+  const [rewrittenTitle, setRewrittenTitle] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const titleStyles = [
-    'Professional', 
-    'Creative', 
-    'SEO-Friendly', 
-    'Clickbait', 
-    'Question', 
-    'How-to'
+  // 风格选项
+  const styleOptions = [
+    { id: '', name: '默认风格' },
+    { id: 'viral', name: '病毒式传播' },
+    { id: 'professional', name: '专业商务' },
+    { id: 'clickbait', name: '吸引点击' },
+    { id: 'seo', name: 'SEO优化' },
+    { id: 'creative', name: '创意标题' }
   ];
 
-  const handleSubmit = (e) => {
+  // 提交标题重写请求
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
+    setRewrittenTitle('');
+    setErrorMessage('');
     
-    // Mock API call simulation
-    setTimeout(() => {
-      const mockTitles = [
-        "10 Essential Strategies to Master " + topic + " in 2023",
-        "Why " + topic + " Is Changing the Future of Business",
-        "The Ultimate Guide to " + topic + ": Everything You Need to Know",
-        "How " + topic + " Can Transform Your Results in Just 30 Days",
-        "Unlocking the Secrets of " + topic + ": Expert Insights Revealed",
-        topic + ": The Complete Framework for Success",
-        "The Science Behind " + topic + ": What Research Shows",
-        "7 Innovative Approaches to " + topic + " That Actually Work"
-      ];
-      
-      setGeneratedTitles(mockTitles);
+    try {
+      const result = await apiService.title.rewriteTitle(title, titleStyle || undefined);
+      if (result && result.success) {
+        setRewrittenTitle(result.rewritten_title);
+      } else {
+        setErrorMessage('标题重写失败');
+      }
+    } catch (error) {
+      console.error('标题重写失败:', error);
+      setErrorMessage('标题重写失败: ' + (error.message || '未知错误'));
+    } finally {
       setIsGenerating(false);
-    }, 1500);
-  };
-
-  const saveTitleToHistory = (title) => {
-    const newSavedTitle = {
-      id: Date.now(),
-      title,
-      date: new Date().toISOString(),
-      topic
-    };
-    
-    setSavedTitles([newSavedTitle, ...savedTitles]);
+    }
   };
 
   return (
     <Layout>
       {/* Hero Section */}
       <section className="hero-section bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-        <h1 className="hero-title">AI Title Generator</h1>
-        <p className="hero-subtitle">Create engaging, click-worthy titles for your content in seconds</p>
+        <h1 className="hero-title">AI 标题重写器</h1>
+        <p className="hero-subtitle">用AI技术优化您的标题，提高点击率和吸引力</p>
       </section>
 
       {/* Main Content */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-5xl">
-          <Tabs defaultValue="generate" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="generate">Generate Titles</TabsTrigger>
-              <TabsTrigger value="history">Saved Titles</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="generate" className="space-y-8">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
-                <h2 className="text-2xl font-bold mb-6">Create Attention-Grabbing Titles</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
+            <h2 className="text-2xl font-bold mb-6">重写您的标题</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title-input">原始标题</Label>
+                <Input
+                  id="title-input"
+                  placeholder="输入需要重写的标题..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="style-select">标题风格</Label>
+                <select
+                  id="style-select"
+                  value={titleStyle}
+                  onChange={(e) => setTitleStyle(e.target.value)}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  {styleOptions.map((style) => (
+                    <option key={style.id} value={style.id}>
+                      {style.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <Button 
+                type="submit" 
+                variant="apple" 
+                className="w-full" 
+                disabled={!title || isGenerating}
+              >
+                {isGenerating ? "处理中..." : "重写标题"}
+              </Button>
+            </form>
+            
+            {errorMessage && (
+              <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-md">
+                {errorMessage}
+              </div>
+            )}
+            
+            {rewrittenTitle && (
+              <div className="mt-6 space-y-4">
+                <h3 className="text-xl font-semibold">重写结果</h3>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <label htmlFor="topic" className="block text-sm font-medium">
-                      Topic or Main Subject
-                    </label>
-                    <Input
-                      id="topic"
-                      placeholder="Enter your main topic (e.g., 'Digital Marketing', 'Healthy Recipes')"
-                      value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="keywords" className="block text-sm font-medium">
-                      Keywords (optional)
-                    </label>
-                    <Input
-                      id="keywords"
-                      placeholder="Enter relevant keywords separated by commas"
-                      value={keywords}
-                      onChange={(e) => setKeywords(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Title Style
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {titleStyles.map((titleStyle) => (
-                        <Button
-                          key={titleStyle}
-                          type="button"
-                          variant={style === titleStyle ? "default" : "outline"}
-                          onClick={() => setStyle(titleStyle)}
-                          className="text-sm"
-                        >
-                          {titleStyle}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
+                <Card className="bg-gray-50 dark:bg-gray-900">
+                  <CardContent className="p-6">
+                    <p className="text-lg">{rewrittenTitle}</p>
+                  </CardContent>
+                </Card>
+                
+                <div className="flex justify-end mt-4">
                   <Button 
-                    type="submit" 
-                    variant="apple" 
-                    className="w-full" 
-                    disabled={!topic || isGenerating}
+                    variant="outline" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(rewrittenTitle)
+                        .then(() => alert('标题已复制到剪贴板'))
+                        .catch(err => console.error('复制失败:', err));
+                    }}
                   >
-                    {isGenerating ? "Generating..." : "Generate Titles"}
+                    复制标题
                   </Button>
-                </form>
-              </div>
-
-              {generatedTitles.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
-                  <h2 className="text-xl font-bold mb-4">Generated Titles</h2>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">Click on any title to save it to your history</p>
-                  
-                  <ul className="space-y-4">
-                    {generatedTitles.map((title, index) => (
-                      <li 
-                        key={index} 
-                        className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
-                        onClick={() => saveTitleToHistory(title)}
-                      >
-                        <p className="font-medium">{title}</p>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="history">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
-                <h2 className="text-2xl font-bold mb-6">Saved Titles</h2>
-                
-                {savedTitles.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">You haven't saved any titles yet.</p>
-                    <p className="text-gray-500 dark:text-gray-400 mt-2">Generate titles and click on them to save.</p>
-                  </div>
-                ) : (
-                  <ul className="space-y-4">
-                    {savedTitles.map((item) => (
-                      <li key={item.id} className="p-4 border rounded-lg">
-                        <p className="font-medium">{item.title}</p>
-                        <div className="flex justify-between mt-2">
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            Topic: {item.topic}
-                          </span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(item.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
+            )}
+          </div>
 
-      {/* Tips Section */}
-      <section className="py-12 px-4 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto max-w-5xl">
-          <h2 className="text-2xl font-bold mb-8 text-center">Tips for Great Titles</h2>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Be Specific</h3>
-              <p className="text-gray-600 dark:text-gray-300">Use numbers and specific details to make your titles more compelling and informative.</p>
-            </div>
+          {/* 标题写作技巧部分 */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6 text-center">标题写作技巧</h2>
             
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Create Curiosity</h3>
-              <p className="text-gray-600 dark:text-gray-300">Hint at valuable information without giving everything away to encourage clicks.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Use Power Words</h3>
-              <p className="text-gray-600 dark:text-gray-300">Incorporate emotional and impactful words that resonate with your audience.</p>
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card>
+                <CardContent className="p-6 space-y-2">
+                  <h3 className="text-lg font-semibold">使用数字和列表</h3>
+                  <p className="text-gray-600 dark:text-gray-300">数字能吸引眼球并提高点击率，例如"7个提高工作效率的方法"</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6 space-y-2">
+                  <h3 className="text-lg font-semibold">激发好奇心</h3>
+                  <p className="text-gray-600 dark:text-gray-300">创造信息缺口，引发读者好奇，例如"这个小习惯能让你的效率翻倍"</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6 space-y-2">
+                  <h3 className="text-lg font-semibold">使用强烈的形容词</h3>
+                  <p className="text-gray-600 dark:text-gray-300">选择情感化和描述性强的词汇，例如"令人震惊"、"必不可少"</p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Layout } from '../components/Layout';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
@@ -6,80 +6,59 @@ import { Textarea } from '../components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { Card, CardContent, CardFooter } from '../components/ui/card';
 import { Label } from '../components/ui/label';
+import apiService from '../api/apiService';
 
 export default function CoverGeneratorPage() {
   // 状态管理
   const [platform, setPlatform] = useState('xiaohongshu');
   const [title, setTitle] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [backgroundImage, setBackgroundImage] = useState('');
-  const [backgroundType, setBackgroundType] = useState('image');
-  const [backgroundColor, setBackgroundColor] = useState('#FFFFFF');
-  const [fontFamily, setFontFamily] = useState('default');
-  const [fontColor, setFontColor] = useState('#000000');
-  const [layout, setLayout] = useState('center');
+  const [content, setContent] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [slogan, setSlogan] = useState('');
+  const [emojiUrl, setEmojiUrl] = useState('');
+  const [style, setStyle] = useState('default');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCover, setGeneratedCover] = useState(null);
   const [taskId, setTaskId] = useState('');
   const [taskStatus, setTaskStatus] = useState('');
   const [previewHtml, setPreviewHtml] = useState('');
+  const [htmlContent, setHtmlContent] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  // 预览iframe引用
+  const previewIframeRef = useRef(null);
 
   // 封面选项
-  const [coverOptions, setCoverOptions] = useState({
-    xiaohongshu: {
-      layouts: [],
-      fonts: [],
-      backgroundTypes: []
-    },
-    wechat: {
-      layouts: [],
-      fonts: [],
-      backgroundTypes: []
-    }
-  });
+  const [coverStyles, setCoverStyles] = useState([]);
 
-  // 加载封面选项
+  // 加载封面风格选项
   useEffect(() => {
-    // 真实环境中从API获取选项
-    // Mock 数据
-    const mockCoverOptions = {
-      xiaohongshu: {
-        layouts: [
-          { id: "center", name: "居中对齐" },
-          { id: "left", name: "左对齐" },
-          { id: "right", name: "右对齐" }
-        ],
-        fonts: [
-          { id: "default", name: "默认字体" },
-          { id: "bold", name: "粗体" },
-          { id: "script", name: "手写体" }
-        ],
-        backgroundTypes: [
-          { id: "image", name: "图片背景" },
-          { id: "color", name: "纯色背景" },
-          { id: "gradient", name: "渐变背景" }
-        ]
-      },
-      wechat: {
-        layouts: [
-          { id: "center", name: "居中对齐" },
-          { id: "left", name: "左对齐" },
-          { id: "right", name: "右对齐" }
-        ],
-        fonts: [
-          { id: "default", name: "默认字体" },
-          { id: "bold", name: "粗体" },
-          { id: "script", name: "手写体" }
-        ],
-        backgroundTypes: [
-          { id: "image", name: "图片背景" },
-          { id: "color", name: "纯色背景" },
-          { id: "gradient", name: "渐变背景" }
-        ]
+    const fetchCoverStyles = async () => {
+      try {
+        const response = await apiService.cover.getCoverStyles();
+        if (response && response.styles) {
+          setCoverStyles(response.styles);
+        }
+      } catch (error) {
+        console.error('获取封面风格选项失败:', error);
+        // 设置默认选项以防API请求失败
+        setCoverStyles([
+          { id: "default", name: "默认风格", description: "简约现代风格" },
+          { id: "soft_tech", name: "柔和科技卡片风", description: "柔和科技风格" },
+          { id: "business", name: "商务风格", description: "现代商务风格" },
+          { id: "tech_blue", name: "科技蓝风格", description: "流动科技风格" },
+          { id: "minimalist", name: "极简风格", description: "极简格栅主义风格" },
+          { id: "digital_ticket", name: "数字票券风", description: "数字极简票券风格" },
+          { id: "constructivism", name: "构成主义风格", description: "新构成主义教学风格" },
+          { id: "luxury_nature", name: "奢华自然风", description: "奢华自然意境风格" },
+          { id: "industrial_punk", name: "工业朋克风", description: "新潮工业反叛风格" },
+          { id: "cute_knowledge", name: "萌系知识卡片", description: "软萌知识卡片风格" },
+          { id: "business_card", name: "商务卡片风", description: "商务简约信息卡片风格" }
+        ]);
       }
     };
     
-    setCoverOptions(mockCoverOptions);
+    fetchCoverStyles();
   }, []);
 
   // 检查任务状态
@@ -87,94 +66,171 @@ export default function CoverGeneratorPage() {
     let intervalId;
     
     if (taskId && taskStatus !== 'completed' && taskStatus !== 'failed') {
-      intervalId = setInterval(() => {
-        // 真实环境中从API获取任务状态
-        // 模拟API查询
-        setTimeout(() => {
-          setTaskStatus('completed');
+      intervalId = setInterval(async () => {
+        try {
+          const result = await apiService.checkTaskStatus(taskId);
+          setTaskStatus(result.status);
+          
+          if (result.status === 'completed') {
+            setIsGenerating(false);
+            if (result.result) {
+              // 获取完整的HTML文件路径
+              const htmlFilePath = result.result.local_path;
+              // 设置预览URL
+              const fileUrl = apiService.getFile(htmlFilePath);
+              setPreviewHtml(fileUrl);
+              
+              // 获取HTML内容
+              fetchHtmlContent(fileUrl);
+              
+              setGeneratedCover({
+                id: taskId,
+                platform: platform,
+                htmlPath: htmlFilePath,
+                timestamp: new Date().toISOString()
+              });
+            }
+          } else if (result.status === 'failed') {
+            setIsGenerating(false);
+            setErrorMessage(result.error || '生成封面时出错');
+          }
+        } catch (error) {
+          console.error('检查任务状态失败:', error);
+          setTaskStatus('failed');
           setIsGenerating(false);
-          
-          // 模拟返回的HTML内容
-          const mockHtml = `
-            <div style="width: 100%; height: 100%; position: relative; background-color: ${backgroundColor}; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
-              <div style="padding: 20px; text-align: ${layout}; max-width: 80%;">
-                <h1 style="color: ${fontColor}; font-size: 24px; margin-bottom: 10px;">${title}</h1>
-                ${subtitle ? `<h2 style="color: ${fontColor}; opacity: 0.8; font-size: 16px;">${subtitle}</h2>` : ''}
-              </div>
-            </div>
-          `;
-          
-          // 设置预览HTML
-          setPreviewHtml(mockHtml);
-          
-          // 设置生成的封面数据
-          setGeneratedCover({
-            id: `cover-${Date.now()}`,
-            platform: platform,
-            title: title,
-            html: mockHtml,
-            timestamp: new Date().toISOString()
-          });
-        }, 2000);
-      }, 1000);
+          setErrorMessage('检查任务状态时出错');
+        }
+      }, 2000);
     }
     
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [taskId, taskStatus, backgroundColor, fontColor, layout, platform, subtitle, title]);
+  }, [taskId, taskStatus, platform]);
+
+  // 获取HTML内容
+  const fetchHtmlContent = async (url) => {
+    try {
+      const response = await fetch(url);
+      const html = await response.text();
+      setHtmlContent(html);
+    } catch (error) {
+      console.error('获取HTML内容失败:', error);
+      setErrorMessage('获取HTML内容失败');
+    }
+  };
 
   // 提交小红书封面生成请求
-  const handleXiaohongshuSubmit = (e) => {
+  const handleXiaohongshuSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     setTaskStatus('pending');
+    setErrorMessage('');
+    setGeneratedCover(null);
+    setPreviewHtml('');
+    setHtmlContent('');
     
-    // 真实环境中调用API
-    // 模拟API调用
-    const mockTaskId = `xiaohongshu-cover-${Date.now()}`;
-    setTaskId(mockTaskId);
-    console.log('小红书封面生成请求', {
-      title,
-      subtitle,
-      background_type: backgroundType,
-      background_image: backgroundImage,
-      background_color: backgroundColor,
-      font_family: fontFamily,
-      font_color: fontColor,
-      layout
-    });
+    try {
+      const response = await apiService.cover.generateXiaohongshuCover({
+        content: content,
+        account_name: accountName,
+        slogan: slogan || undefined,
+        style: style
+      });
+      
+      setTaskId(response.task_id);
+    } catch (error) {
+      console.error('提交小红书封面生成请求失败:', error);
+      setIsGenerating(false);
+      setTaskStatus('failed');
+      setErrorMessage('提交封面生成请求失败');
+    }
   };
   
   // 提交微信封面生成请求
-  const handleWechatSubmit = (e) => {
+  const handleWechatSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     setTaskStatus('pending');
+    setErrorMessage('');
+    setGeneratedCover(null);
+    setPreviewHtml('');
+    setHtmlContent('');
     
-    // 真实环境中调用API
-    // 模拟API调用
-    const mockTaskId = `wechat-cover-${Date.now()}`;
-    setTaskId(mockTaskId);
-    console.log('微信封面生成请求', {
-      title,
-      subtitle,
-      background_type: backgroundType,
-      background_image: backgroundImage,
-      background_color: backgroundColor,
-      font_family: fontFamily,
-      font_color: fontColor,
-      layout
-    });
+    try {
+      const response = await apiService.cover.generateWechatCover({
+        title: title,
+        emoji_url: emojiUrl || undefined,
+        style: style
+      });
+      
+      setTaskId(response.task_id);
+    } catch (error) {
+      console.error('提交微信封面生成请求失败:', error);
+      setIsGenerating(false);
+      setTaskStatus('failed');
+      setErrorMessage('提交封面生成请求失败');
+    }
+  };
+
+  // 复制HTML内容
+  const copyHtmlContent = () => {
+    if (htmlContent) {
+      navigator.clipboard.writeText(htmlContent)
+        .then(() => alert('HTML已复制到剪贴板'))
+        .catch(err => {
+          console.error('复制失败:', err);
+          alert('复制失败');
+        });
+    }
+  };
+
+  // 下载为图片
+  const downloadAsImage = () => {
+    if (previewIframeRef.current) {
+      const iframe = previewIframeRef.current;
+      
+      // 确保iframe已加载
+      if (iframe.contentDocument) {
+        // 创建一个新的Canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 获取iframe内容大小
+        const width = iframe.contentDocument.documentElement.scrollWidth;
+        const height = iframe.contentDocument.documentElement.scrollHeight;
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 使用html2canvas或其他库渲染iframe内容
+        // 此处简化为直接创建链接，实际项目需集成html2canvas等库
+        alert('请集成html2canvas库以实现此功能');
+        
+        // 完整实现示例:
+        // html2canvas(iframe.contentDocument.body).then(canvas => {
+        //   const dataUrl = canvas.toDataURL('image/png');
+        //   const link = document.createElement('a');
+        //   link.download = `${platform}-cover-${Date.now()}.png`;
+        //   link.href = dataUrl;
+        //   link.click();
+        // });
+      }
+    }
   };
 
   // 切换平台时重置部分状态
   const handlePlatformChange = (value) => {
     setPlatform(value);
     setTitle('');
-    setSubtitle('');
+    setContent('');
+    setAccountName('');
+    setSlogan('');
+    setEmojiUrl('');
     setGeneratedCover(null);
     setPreviewHtml('');
+    setHtmlContent('');
+    setErrorMessage('');
   };
 
   return (
@@ -218,117 +274,65 @@ export default function CoverGeneratorPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="subtitle">副标题/描述 (选填)</Label>
-                      <Input
-                        id="subtitle"
-                        placeholder="输入副标题或描述..."
-                        value={subtitle}
-                        onChange={(e) => setSubtitle(e.target.value)}
+                      <Label htmlFor="content">内容</Label>
+                      <Textarea
+                        id="content"
+                        placeholder="输入小红书笔记内容..."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="background-type">背景类型</Label>
-                      <select
-                        id="background-type"
-                        value={backgroundType}
-                        onChange={(e) => setBackgroundType(e.target.value)}
-                        className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        {coverOptions.xiaohongshu.backgroundTypes.map((type) => (
-                          <option key={type.id} value={type.id}>{type.name}</option>
-                        ))}
-                      </select>
+                      <Label htmlFor="account-name">账号名称</Label>
+                      <Input
+                        id="account-name"
+                        placeholder="输入小红书账号名称..."
+                        value={accountName}
+                        onChange={(e) => setAccountName(e.target.value)}
+                        required
+                      />
                     </div>
 
-                    {backgroundType === 'image' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="background-image">背景图片URL</Label>
-                        <Input
-                          id="background-image"
-                          placeholder="输入背景图片链接..."
-                          value={backgroundImage}
-                          onChange={(e) => setBackgroundImage(e.target.value)}
-                        />
-                      </div>
-                    )}
+                    <div className="space-y-2">
+                      <Label htmlFor="slogan">口号</Label>
+                      <Input
+                        id="slogan"
+                        placeholder="输入小红书口号..."
+                        value={slogan}
+                        onChange={(e) => setSlogan(e.target.value)}
+                      />
+                    </div>
 
-                    {backgroundType === 'color' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="background-color">背景颜色</Label>
-                        <div className="flex space-x-3">
-                          <Input
-                            id="background-color"
-                            type="color"
-                            value={backgroundColor}
-                            onChange={(e) => setBackgroundColor(e.target.value)}
-                            className="w-16"
-                          />
-                          <Input
-                            value={backgroundColor}
-                            onChange={(e) => setBackgroundColor(e.target.value)}
-                            placeholder="#RRGGBB"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="font-family">字体</Label>
-                        <select
-                          id="font-family"
-                          value={fontFamily}
-                          onChange={(e) => setFontFamily(e.target.value)}
-                          className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        >
-                          {coverOptions.xiaohongshu.fonts.map((font) => (
-                            <option key={font.id} value={font.id}>{font.name}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="font-color">字体颜色</Label>
-                        <div className="flex space-x-3">
-                          <Input
-                            id="font-color"
-                            type="color"
-                            value={fontColor}
-                            onChange={(e) => setFontColor(e.target.value)}
-                            className="w-16"
-                          />
-                          <Input
-                            value={fontColor}
-                            onChange={(e) => setFontColor(e.target.value)}
-                            placeholder="#RRGGBB"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="layout">布局</Label>
-                        <select
-                          id="layout"
-                          value={layout}
-                          onChange={(e) => setLayout(e.target.value)}
-                          className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        >
-                          {coverOptions.xiaohongshu.layouts.map((layoutOption) => (
-                            <option key={layoutOption.id} value={layoutOption.id}>{layoutOption.name}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="style">风格</Label>
+                      <select
+                        id="style"
+                        value={style}
+                        onChange={(e) => setStyle(e.target.value)}
+                        className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        {coverStyles.map((style) => (
+                          <option key={style.id} value={style.id}>{style.name}</option>
+                        ))}
+                      </select>
                     </div>
 
                     <Button 
                       type="submit" 
                       variant="apple" 
                       className="w-full" 
-                      disabled={!title || isGenerating}
+                      disabled={!content || !accountName || isGenerating}
                     >
                       {isGenerating ? "生成中..." : "生成封面"}
                     </Button>
+                    
+                    {errorMessage && (
+                      <div className="p-4 bg-red-50 text-red-600 rounded-md">
+                        {errorMessage}
+                      </div>
+                    )}
                   </form>
                 </div>
 
@@ -337,10 +341,13 @@ export default function CoverGeneratorPage() {
                   <h2 className="text-2xl font-bold mb-6">封面预览</h2>
                   
                   {previewHtml ? (
-                    <div className="w-full aspect-[1/1.4] rounded-lg overflow-hidden border shadow-sm mb-6">
-                      <div
-                        className="w-full h-full"
-                        dangerouslySetInnerHTML={{ __html: previewHtml }}
+                    <div className="w-full aspect-[1/1.4] rounded-lg overflow-hidden border shadow-sm mb-6 relative">
+                      <iframe
+                        ref={previewIframeRef}
+                        src={previewHtml}
+                        className="w-full h-full border-0"
+                        title="封面预览"
+                        sandbox="allow-same-origin"
                       />
                     </div>
                   ) : (
@@ -353,10 +360,10 @@ export default function CoverGeneratorPage() {
                   
                   {generatedCover && (
                     <div className="flex justify-end space-x-3">
-                      <Button variant="outline">
+                      <Button variant="outline" onClick={copyHtmlContent}>
                         复制HTML
                       </Button>
-                      <Button variant="outline">
+                      <Button variant="outline" onClick={downloadAsImage}>
                         下载图片
                       </Button>
                     </div>
@@ -368,20 +375,30 @@ export default function CoverGeneratorPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
                 <h2 className="text-xl font-bold mb-6">热门封面模板</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {Array(4).fill(0).map((_, i) => (
-                    <Card key={i} className="overflow-hidden">
-                      <div className="aspect-[1/1.4] bg-gray-100 dark:bg-gray-700 relative">
-                        <img
-                          src={`https://picsum.photos/seed/${i + 500}/400/560`}
-                          alt={`Template ${i + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                  {coverStyles.slice(0, 8).map((styleItem, i) => (
+                    <Card key={styleItem.id} className="overflow-hidden">
+                      <div 
+                        className="aspect-[1/1.4] bg-gray-100 dark:bg-gray-700 relative flex items-center justify-center p-4 text-center"
+                        style={{
+                          backgroundImage: `linear-gradient(135deg, ${getColorForStyle(styleItem.id)}, ${getDarkerColorForStyle(styleItem.id)})`,
+                          color: getTextColorForStyle(styleItem.id)
+                        }}
+                      >
+                        <div>
+                          <h3 className="font-bold mb-2">{styleItem.name}</h3>
+                          <p className="text-sm opacity-80">{styleItem.description}</p>
+                        </div>
                       </div>
                       <CardContent className="p-4">
-                        <h3 className="font-medium">小红书模板 {i + 1}</h3>
+                        <h3 className="font-medium">小红书模板 - {styleItem.name}</h3>
                       </CardContent>
                       <CardFooter className="p-4 pt-0">
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => setStyle(styleItem.id)}
+                        >
                           使用此模板
                         </Button>
                       </CardFooter>
@@ -411,107 +428,27 @@ export default function CoverGeneratorPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="wechat-subtitle">副标题/描述 (选填)</Label>
+                      <Label htmlFor="wechat-emoji-url">表情符号URL</Label>
                       <Input
-                        id="wechat-subtitle"
-                        placeholder="输入副标题或描述..."
-                        value={subtitle}
-                        onChange={(e) => setSubtitle(e.target.value)}
+                        id="wechat-emoji-url"
+                        placeholder="输入表情符号链接..."
+                        value={emojiUrl}
+                        onChange={(e) => setEmojiUrl(e.target.value)}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="wechat-background-type">背景类型</Label>
+                      <Label htmlFor="wechat-style">风格</Label>
                       <select
-                        id="wechat-background-type"
-                        value={backgroundType}
-                        onChange={(e) => setBackgroundType(e.target.value)}
+                        id="wechat-style"
+                        value={style}
+                        onChange={(e) => setStyle(e.target.value)}
                         className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       >
-                        {coverOptions.wechat.backgroundTypes.map((type) => (
-                          <option key={type.id} value={type.id}>{type.name}</option>
+                        {coverStyles.map((style) => (
+                          <option key={style.id} value={style.id}>{style.name}</option>
                         ))}
                       </select>
-                    </div>
-
-                    {backgroundType === 'image' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="wechat-background-image">背景图片URL</Label>
-                        <Input
-                          id="wechat-background-image"
-                          placeholder="输入背景图片链接..."
-                          value={backgroundImage}
-                          onChange={(e) => setBackgroundImage(e.target.value)}
-                        />
-                      </div>
-                    )}
-
-                    {backgroundType === 'color' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="wechat-background-color">背景颜色</Label>
-                        <div className="flex space-x-3">
-                          <Input
-                            id="wechat-background-color"
-                            type="color"
-                            value={backgroundColor}
-                            onChange={(e) => setBackgroundColor(e.target.value)}
-                            className="w-16"
-                          />
-                          <Input
-                            value={backgroundColor}
-                            onChange={(e) => setBackgroundColor(e.target.value)}
-                            placeholder="#RRGGBB"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="wechat-font-family">字体</Label>
-                        <select
-                          id="wechat-font-family"
-                          value={fontFamily}
-                          onChange={(e) => setFontFamily(e.target.value)}
-                          className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        >
-                          {coverOptions.wechat.fonts.map((font) => (
-                            <option key={font.id} value={font.id}>{font.name}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="wechat-font-color">字体颜色</Label>
-                        <div className="flex space-x-3">
-                          <Input
-                            id="wechat-font-color"
-                            type="color"
-                            value={fontColor}
-                            onChange={(e) => setFontColor(e.target.value)}
-                            className="w-16"
-                          />
-                          <Input
-                            value={fontColor}
-                            onChange={(e) => setFontColor(e.target.value)}
-                            placeholder="#RRGGBB"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="wechat-layout">布局</Label>
-                        <select
-                          id="wechat-layout"
-                          value={layout}
-                          onChange={(e) => setLayout(e.target.value)}
-                          className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        >
-                          {coverOptions.wechat.layouts.map((layoutOption) => (
-                            <option key={layoutOption.id} value={layoutOption.id}>{layoutOption.name}</option>
-                          ))}
-                        </select>
-                      </div>
                     </div>
 
                     <Button 
@@ -522,6 +459,12 @@ export default function CoverGeneratorPage() {
                     >
                       {isGenerating ? "生成中..." : "生成封面"}
                     </Button>
+                    
+                    {errorMessage && (
+                      <div className="p-4 bg-red-50 text-red-600 rounded-md">
+                        {errorMessage}
+                      </div>
+                    )}
                   </form>
                 </div>
 
@@ -531,9 +474,12 @@ export default function CoverGeneratorPage() {
                   
                   {previewHtml ? (
                     <div className="w-full aspect-[900/383] rounded-lg overflow-hidden border shadow-sm mb-6">
-                      <div
-                        className="w-full h-full"
-                        dangerouslySetInnerHTML={{ __html: previewHtml }}
+                      <iframe
+                        ref={previewIframeRef}
+                        src={previewHtml}
+                        className="w-full h-full border-0"
+                        title="封面预览"
+                        sandbox="allow-same-origin"
                       />
                     </div>
                   ) : (
@@ -546,10 +492,10 @@ export default function CoverGeneratorPage() {
                   
                   {generatedCover && (
                     <div className="flex justify-end space-x-3">
-                      <Button variant="outline">
+                      <Button variant="outline" onClick={copyHtmlContent}>
                         复制HTML
                       </Button>
-                      <Button variant="outline">
+                      <Button variant="outline" onClick={downloadAsImage}>
                         下载图片
                       </Button>
                     </div>
@@ -561,20 +507,30 @@ export default function CoverGeneratorPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border">
                 <h2 className="text-xl font-bold mb-6">热门封面模板</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {Array(3).fill(0).map((_, i) => (
-                    <Card key={i} className="overflow-hidden">
-                      <div className="aspect-[900/383] bg-gray-100 dark:bg-gray-700 relative">
-                        <img
-                          src={`https://picsum.photos/seed/${i + 200}/900/383`}
-                          alt={`Template ${i + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                  {coverStyles.slice(0, 6).map((styleItem, i) => (
+                    <Card key={styleItem.id} className="overflow-hidden">
+                      <div 
+                        className="aspect-[900/383] bg-gray-100 dark:bg-gray-700 relative flex items-center justify-center p-4 text-center"
+                        style={{
+                          backgroundImage: `linear-gradient(135deg, ${getColorForStyle(styleItem.id)}, ${getDarkerColorForStyle(styleItem.id)})`,
+                          color: getTextColorForStyle(styleItem.id)
+                        }}
+                      >
+                        <div>
+                          <h3 className="font-bold mb-2">{styleItem.name}</h3>
+                          <p className="text-sm opacity-80">{styleItem.description}</p>
+                        </div>
                       </div>
                       <CardContent className="p-4">
-                        <h3 className="font-medium">微信模板 {i + 1}</h3>
+                        <h3 className="font-medium">微信模板 - {styleItem.name}</h3>
                       </CardContent>
                       <CardFooter className="p-4 pt-0">
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => setStyle(styleItem.id)}
+                        >
                           使用此模板
                         </Button>
                       </CardFooter>
@@ -599,17 +555,59 @@ export default function CoverGeneratorPage() {
             </div>
             
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">高度可定制</h3>
-              <p className="text-gray-600 dark:text-gray-300">自定义背景、字体、颜色、布局等多种参数，打造专属封面。</p>
+              <h3 className="text-lg font-semibold mb-3">丰富风格选择</h3>
+              <p className="text-gray-600 dark:text-gray-300">多种设计风格模板，包括科技、商务、极简、奢华等多种风格。</p>
             </div>
             
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold mb-3">即时预览</h3>
-              <p className="text-gray-600 dark:text-gray-300">实时查看封面效果，快速调整满足您的需求。</p>
+              <p className="text-gray-600 dark:text-gray-300">实时查看封面效果，支持导出HTML和图片格式。</p>
             </div>
           </div>
         </div>
       </section>
     </Layout>
   );
+}
+
+// 根据风格ID生成颜色
+function getColorForStyle(styleId) {
+  const colorMap = {
+    'default': '#f0f0f0',
+    'soft_tech': '#e6f7ff',
+    'business': '#f6ffed',
+    'tech_blue': '#d6e4ff',
+    'minimalist': '#ffffff',
+    'digital_ticket': '#fff7e6',
+    'constructivism': '#fff1f0',
+    'luxury_nature': '#fcffe6',
+    'industrial_punk': '#f9f0ff',
+    'cute_knowledge': '#fff0f6',
+    'business_card': '#f5f5f5'
+  };
+  return colorMap[styleId] || '#f0f0f0';
+}
+
+// 获取深色版本
+function getDarkerColorForStyle(styleId) {
+  const colorMap = {
+    'default': '#d9d9d9',
+    'soft_tech': '#bae7ff',
+    'business': '#d9f7be',
+    'tech_blue': '#adc6ff',
+    'minimalist': '#f0f0f0',
+    'digital_ticket': '#ffd591',
+    'constructivism': '#ffccc7',
+    'luxury_nature': '#eaff8f',
+    'industrial_punk': '#efdbff',
+    'cute_knowledge': '#ffd6e7',
+    'business_card': '#d9d9d9'
+  };
+  return colorMap[styleId] || '#d9d9d9';
+}
+
+// 获取文本颜色
+function getTextColorForStyle(styleId) {
+  const darkStylesText = ['industrial_punk', 'constructivism', 'tech_blue'];
+  return darkStylesText.includes(styleId) ? '#ffffff' : '#000000';
 } 

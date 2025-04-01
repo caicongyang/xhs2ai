@@ -4,6 +4,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import apiService from '../api/apiService';
 
 export default function ImageGeneratorPage() {
   // MiniMaxi图像参数状态
@@ -28,6 +29,7 @@ export default function ImageGeneratorPage() {
   const [generatedImages, setGeneratedImages] = useState([]);
   const [taskId, setTaskId] = useState('');
   const [taskStatus, setTaskStatus] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   
   // 图像选项
   const [imageOptions, setImageOptions] = useState({
@@ -45,45 +47,48 @@ export default function ImageGeneratorPage() {
   
   // 加载图像选项
   useEffect(() => {
-    // 真实环境中从API获取选项
-    // Mock 数据
-    const mockImageOptions = {
-      minimaxi: {
-        models: [
-          { id: "sd-xl", name: "SD-XL" },
-          { id: "sd-turbo", name: "SD Turbo" },
-          { id: "sdxl-turbo", name: "SDXL Turbo" }
-        ],
-        styles: [
-          { id: "realistic", name: "Realistic" },
-          { id: "anime", name: "Anime" },
-          { id: "digital-art", name: "Digital Art" }
-        ],
-        sizes: [
-          { id: "1024x1024", name: "Square (1024x1024)" },
-          { id: "1024x1792", name: "Portrait (1024x1792)" },
-          { id: "1792x1024", name: "Landscape (1792x1024)" }
-        ],
-        formats: [
-          { id: "png", name: "PNG" },
-          { id: "jpeg", name: "JPEG" }
-        ]
-      },
-      kling: {
-        styles: [
-          { id: "realistic", name: "Realistic" },
-          { id: "anime", name: "Anime" },
-          { id: "watercolor", name: "Watercolor" }
-        ],
-        ratios: [
-          { id: "1:1", name: "Square (1:1)" },
-          { id: "4:3", name: "Standard (4:3)" },
-          { id: "16:9", name: "Widescreen (16:9)" }
-        ]
+    const fetchImageOptions = async () => {
+      try {
+        const options = await apiService.image.getImageOptions();
+        setImageOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch image options:', error);
+        // 设置默认选项以防API请求失败
+        const defaultOptions = {
+          minimaxi: {
+            models: [
+              { id: "sd-xl", name: "SD-XL" },
+              { id: "sd-turbo", name: "SD Turbo" }
+            ],
+            styles: [
+              { id: "realistic", name: "Realistic" },
+              { id: "anime", name: "Anime" }
+            ],
+            sizes: [
+              { id: "1024x1024", name: "Square (1024x1024)" },
+              { id: "1024x1792", name: "Portrait (1024x1792)" }
+            ],
+            formats: [
+              { id: "png", name: "PNG" },
+              { id: "jpeg", name: "JPEG" }
+            ]
+          },
+          kling: {
+            styles: [
+              { id: "realistic", name: "Realistic" },
+              { id: "anime", name: "Anime" }
+            ],
+            ratios: [
+              { id: "1:1", name: "Square (1:1)" },
+              { id: "4:3", name: "Standard (4:3)" }
+            ]
+          }
+        };
+        setImageOptions(defaultOptions);
       }
     };
     
-    setImageOptions(mockImageOptions);
+    fetchImageOptions();
   }, []);
   
   // 检查任务状态
@@ -91,21 +96,37 @@ export default function ImageGeneratorPage() {
     let intervalId;
     
     if (taskId && taskStatus !== 'completed' && taskStatus !== 'failed') {
-      intervalId = setInterval(() => {
-        // 真实环境中从API获取任务状态
-        // 模拟API查询
-        setTimeout(() => {
-          setTaskStatus('completed');
-          setIsGenerating(false);
-          // 模拟返回的图片URL
-          setGeneratedImages([
-            { 
-              url: `https://picsum.photos/seed/${Date.now()}/1024/1024`,
-              timestamp: new Date().toISOString()
+      intervalId = setInterval(async () => {
+        try {
+          const result = await apiService.checkTaskStatus(taskId);
+          setTaskStatus(result.status);
+          
+          if (result.status === 'completed') {
+            setIsGenerating(false);
+            if (result.result && result.result.images) {
+              const images = result.result.images.map(img => ({
+                url: img.url,
+                local_path: img.local_path
+              }));
+              setGeneratedImages(images);
+            } else if (result.result) {
+              // 针对Kling API的单张图片处理
+              setGeneratedImages([{
+                url: result.result.url,
+                local_path: result.result.local_path
+              }]);
             }
-          ]);
-        }, 2000);
-      }, 1000);
+          } else if (result.status === 'failed') {
+            setIsGenerating(false);
+            setErrorMessage(result.error || '生成图像时出错');
+          }
+        } catch (error) {
+          console.error('检查任务状态失败:', error);
+          setTaskStatus('failed');
+          setIsGenerating(false);
+          setErrorMessage('检查任务状态时出错');
+        }
+      }, 2000);
     }
     
     return () => {
@@ -114,44 +135,58 @@ export default function ImageGeneratorPage() {
   }, [taskId, taskStatus]);
   
   // 提交海螺图像生成请求
-  const handleMiniMaxiSubmit = (e) => {
+  const handleMiniMaxiSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     setTaskStatus('pending');
+    setErrorMessage('');
+    setGeneratedImages([]);
     
-    // 真实环境中调用API
-    // 模拟API调用
-    const mockTaskId = `minimaxi-${Date.now()}`;
-    setTaskId(mockTaskId);
-    console.log('MiniMaxi图像生成请求', {
-      prompt: miniMaxiPrompt,
-      negative_prompt: miniMaxiNegativePrompt,
-      model: miniMaxiModel,
-      style: miniMaxiStyle,
-      size: miniMaxiSize,
-      format: miniMaxiFormat,
-      num_images: miniMaxiNumImages
-    });
+    try {
+      const response = await apiService.image.generateMiniMaxiImage({
+        prompt: miniMaxiPrompt,
+        negative_prompt: miniMaxiNegativePrompt || undefined,
+        model: miniMaxiModel,
+        style: miniMaxiStyle || undefined,
+        size: miniMaxiSize,
+        format: miniMaxiFormat,
+        num_images: miniMaxiNumImages
+      });
+      
+      setTaskId(response.task_id);
+    } catch (error) {
+      console.error('提交图像生成请求失败:', error);
+      setIsGenerating(false);
+      setTaskStatus('failed');
+      setErrorMessage('提交图像生成请求失败');
+    }
   };
   
   // 提交Kling图像生成请求
-  const handleKlingSubmit = (e) => {
+  const handleKlingSubmit = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     setTaskStatus('pending');
+    setErrorMessage('');
+    setGeneratedImages([]);
     
-    // 真实环境中调用API
-    // 模拟API调用
-    const mockTaskId = `kling-${Date.now()}`;
-    setTaskId(mockTaskId);
-    console.log('Kling图像生成请求', {
-      prompt: klingPrompt,
-      negative_prompt: klingNegativePrompt,
-      ratio: klingRatio,
-      style: klingStyle,
-      steps: klingSteps,
-      model: klingModel
-    });
+    try {
+      const response = await apiService.image.generateKlingImage({
+        prompt: klingPrompt,
+        negative_prompt: klingNegativePrompt || undefined,
+        ratio: klingRatio,
+        style: klingStyle || undefined,
+        steps: klingSteps,
+        model: klingModel
+      });
+      
+      setTaskId(response.task_id);
+    } catch (error) {
+      console.error('提交图像生成请求失败:', error);
+      setIsGenerating(false);
+      setTaskStatus('failed');
+      setErrorMessage('提交图像生成请求失败');
+    }
   };
 
   return (

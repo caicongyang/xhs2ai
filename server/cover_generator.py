@@ -83,7 +83,7 @@ class CoverGenerator:
             ("user", """标题：{title}
             emoji：{emoji_url}
             风格：{style}
-            请生成一个符合要求的封面设计，直接返回完整的HTML代码，不需要其他内容，也不要代码高亮```html。""")
+            请生成一个符合要求的封面设计，直接返回完整的HTML代码，不需要其他内容，不要使用代码高亮```html来包裹内容。""")
         ])
         
         self.xhs_prompt = ChatPromptTemplate.from_messages([
@@ -121,7 +121,7 @@ class CoverGenerator:
             账号名称：{account_name}
             标语：{slogan}
             风格：{style}
-            请生成一个符合要求的封面设计，直接返回完整的HTML代码，不需要其他内容，也不要代码高亮```html。""")
+            请生成一个符合要求的封面设计，直接返回完整的HTML代码，不需要其他内容，不要使用代码高亮```html来包裹内容。""")
         ])
         
         self.wechat_chain = LLMChain(
@@ -551,11 +551,11 @@ class CoverGenerator:
 def main():
     generator = CoverGenerator()
     
-    # 生成微信公众号封面
-    wechat_title = "一套提示词帮你实现小红书、公众号封面自由，Deepseek V3也能用！"
-    emoji_url = "https://s2.loli.net/2025/03/24/pBmlncEYkodSVA6.png"
-    wechat_file = generator.generate_wechat_cover(wechat_title, emoji_url)
-    print(f"微信公众号封面已生成：{wechat_file}")
+    # # 生成微信公众号封面
+    # wechat_title = "一套提示词帮你实现小红书、公众号封面自由，Deepseek V3也能用！"
+    # emoji_url = "https://s2.loli.net/2025/03/24/pBmlncEYkodSVA6.png"
+    # wechat_file = generator.generate_wechat_cover(wechat_title, emoji_url)
+    # print(f"微信公众号封面已生成：{wechat_file}")
     
     # 生成小红书封面
     xhs_content = """Andrej Karpathy 分享了他是如何只用一个文件做笔记的 非项目的日常笔记他只用一个苹果备忘录文件，

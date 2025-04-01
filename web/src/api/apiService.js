@@ -38,12 +38,17 @@ const checkTaskStatus = async (taskId) => {
   return await apiRequest(`/api/tasks/${taskId}`);
 };
 
-// 标题生成相关API
+// 获取生成的文件
+const getFile = async (filePath) => {
+  return `${API_BASE_URL}/api/files/${filePath}`;
+};
+
+// 标题重写相关API
 const titleApi = {
-  generateTitles: async (text, platform, count = 5) => {
-    const response = await apiRequest('/api/generate-titles', {
+  rewriteTitle: async (title, style) => {
+    const response = await apiRequest('/api/rewrite/title', {
       method: 'POST',
-      body: JSON.stringify({ text, platform, count }),
+      body: JSON.stringify({ title, style }),
     });
     return response;
   },
@@ -51,10 +56,18 @@ const titleApi = {
 
 // 内容改写相关API
 const contentApi = {
-  rewriteContent: async (content, tone, style) => {
-    const response = await apiRequest('/api/rewrite-content', {
+  rewriteUrlContent: async (url) => {
+    const response = await apiRequest('/api/rewrite/url', {
       method: 'POST',
-      body: JSON.stringify({ content, tone, style }),
+      body: JSON.stringify({ url }),
+    });
+    return response;
+  },
+  
+  rewriteContentStyle: async (content, style) => {
+    const response = await apiRequest('/api/rewrite/style', {
+      method: 'POST',
+      body: JSON.stringify({ content, style }),
     });
     return response;
   },
@@ -62,9 +75,14 @@ const contentApi = {
 
 // 图像生成相关API
 const imageApi = {
+  // 获取图像生成选项
+  getImageOptions: async () => {
+    return await apiRequest('/api/images/options');
+  },
+  
   // 海螺(MiniMaxi)图像生成
   generateMiniMaxiImage: async (params) => {
-    const response = await apiRequest('/api/generate-minimaxi-image', {
+    const response = await apiRequest('/api/minimaxi/images/generate', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -73,7 +91,7 @@ const imageApi = {
   
   // Kling图像生成
   generateKlingImage: async (params) => {
-    const response = await apiRequest('/api/generate-kling-image', {
+    const response = await apiRequest('/api/kling/images/generate', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -83,27 +101,27 @@ const imageApi = {
 
 // 视频生成相关API
 const videoApi = {
-  // 从文本生成视频
+  // 海螺(MiniMaxi)视频生成
+  generateMiniMaxiVideo: async (params) => {
+    const response = await apiRequest('/api/minimaxi/videos/generate', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+    return response;
+  },
+  
+  // 从文本生成视频(Kling)
   generateKlingVideoFromText: async (params) => {
-    const response = await apiRequest('/api/generate-kling-video-from-text', {
+    const response = await apiRequest('/api/kling/videos/text-to-video', {
       method: 'POST',
       body: JSON.stringify(params),
     });
     return response;
   },
   
-  // 从图片生成视频
+  // 从图片生成视频(Kling)
   generateKlingVideoFromImage: async (params) => {
-    const response = await apiRequest('/api/generate-kling-video-from-image', {
-      method: 'POST',
-      body: JSON.stringify(params),
-    });
-    return response;
-  },
-  
-  // 视频操作（如：提高帧率、分辨率等）
-  processVideo: async (params) => {
-    const response = await apiRequest('/api/process-video', {
+    const response = await apiRequest('/api/kling/videos/image-to-video', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -113,9 +131,14 @@ const videoApi = {
 
 // 封面生成相关API
 const coverApi = {
+  // 获取封面风格选项
+  getCoverStyles: async () => {
+    return await apiRequest('/api/covers/styles');
+  },
+  
   // 生成小红书封面
   generateXiaohongshuCover: async (params) => {
-    const response = await apiRequest('/api/generate-xiaohongshu-cover', {
+    const response = await apiRequest('/api/covers/xiaohongshu', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -124,7 +147,7 @@ const coverApi = {
   
   // 生成微信公众号封面
   generateWechatCover: async (params) => {
-    const response = await apiRequest('/api/generate-wechat-cover', {
+    const response = await apiRequest('/api/covers/wechat', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -150,6 +173,7 @@ const historyApi = {
 // 导出API服务
 const apiService = {
   checkTaskStatus,
+  getFile,
   title: titleApi,
   content: contentApi,
   image: imageApi,
