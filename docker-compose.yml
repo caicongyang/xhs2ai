@@ -11,12 +11,14 @@ services:
     volumes:
       - ./web:/app
       - /app/node_modules
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
-    command: npm run dev
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
+      - NEXT_PUBLIC_API_URL=/api
+    command: npm run dev -- -H 0.0.0.0
     networks:
       - xhs2ai-network
 
@@ -27,6 +29,8 @@ services:
       dockerfile: Dockerfile
     container_name: xhs2ai-server
     restart: unless-stopped
+    expose:
+      - "8000"
     volumes:
       - ./server/src:/app/src
       - ./server/.env:/app/.env
@@ -39,10 +43,11 @@ services:
       - LLM_API_KEY=${LLM_API_KEY}
       - LLM_BASE_URL=${LLM_BASE_URL}
       - PYTHONPATH=/app
+      - BASE_URL=/
     networks:
       - xhs2ai-network
 
-  # Nginx service
+  # Nginx service - 唯一对外暴露的服务
   nginx:
     image: nginx:alpine
     container_name: xhs2ai-nginx

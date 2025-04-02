@@ -9,8 +9,13 @@ RUN npm ci
 # For development, we'll mount the source code from the host
 # So no need to copy the rest of the files here
 
+# 设置环境变量，确保前端使用正确的主机名和API地址
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+ENV NEXT_PUBLIC_API_URL=
+
 # Expose development port
 EXPOSE 3000
 
 # Start development server with hot reloading
-CMD ["npm", "run", "dev"] 
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"] 
