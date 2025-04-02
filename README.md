@@ -38,11 +38,62 @@ LLM_BASE_URL=your_actual_api_base_url
 # ...
 ```
 
-#### 3. 启动服务
+#### 3. 构建和启动服务
 
-**生产环境部署：**
+**构建并启动所有服务：**
 
 ```bash
+# 构建所有服务镜像（需要在代码更改后执行）
+docker-compose build
+
+# 启动所有服务
+docker-compose up -d
+```
+
+**只构建和启动特定服务：**
+
+```bash
+# 只构建web服务
+docker-compose build web
+
+# 只构建server服务
+docker-compose build server
+
+# 只构建并启动web服务
+docker-compose up -d --build web
+
+# 只构建并启动server服务
+docker-compose up -d --build server
+```
+
+**重新构建并启动所有服务：**
+
+```bash
+# 停止现有容器，重新构建并启动
+docker-compose down && docker-compose up -d --build
+```
+
+**修改代码后重新构建：**
+
+```bash
+# 1. 修改前端代码后重新构建web服务
+docker-compose build web
+docker-compose up -d web
+
+# 2. 修改后端代码后重新构建server服务
+docker-compose build server
+docker-compose up -d server
+
+# 3. 修改Nginx配置后重启nginx服务
+docker-compose up -d --no-deps nginx
+```
+
+**清除缓存并完全重建：**
+
+```bash
+# 停止所有容器，删除所有镜像和卷，然后重新构建
+docker-compose down -v
+docker-compose build --no-cache
 docker-compose up -d
 ```
 
@@ -58,8 +109,8 @@ docker-compose logs -f server
 
 #### 4. 访问应用
 
-- 网页界面: http://localhost
-- API文档: http://localhost/api/docs
+- 网页界面: http://localhost:8081
+- API文档: http://localhost:8081/api/docs
 
 ### 开发环境配置
 
@@ -84,7 +135,7 @@ docker-compose -f docker-compose.dev.yml up -d server
 |-----|------|---------|
 | `web` | Next.js前端应用 | 内部3000端口 |
 | `server` | Python FastAPI后端服务 | 内部8000端口 |
-| `nginx` | Nginx网关和反向代理 | 外部80端口 |
+| `nginx` | Nginx网关和反向代理 | 外部8081端口 |
 
 ### 数据持久化
 
@@ -92,6 +143,9 @@ docker-compose -f docker-compose.dev.yml up -d server
 
 - `server_outputs`: 存储生成的输出文件
 - `server_templates`: 存储模板文件
+- `server_images`: 存储生成的图片
+- `server_videos`: 存储海螺生成的视频
+- `server_videos2`: 存储其他视频
 
 ### 常见问题与解决方案
 
@@ -105,12 +159,12 @@ sudo chown -R $(id -u):$(id -g) ./server/outputs ./server/templates
 
 #### 端口冲突
 
-如果80端口已被占用，可在`docker-compose.yml`中修改端口映射：
+如果8081端口已被占用，可在`docker-compose.yml`中修改端口映射：
 
 ```yaml
 nginx:
   ports:
-    - "8080:80"  # 将80改为其他可用端口
+    - "8080:80"  # 将8081改为其他可用端口
 ```
 
 #### 重启服务
@@ -123,6 +177,19 @@ docker-compose restart
 
 # 重启特定服务
 docker-compose restart server
+```
+
+#### 静态资源500错误
+
+如果遇到静态资源加载出现500错误：
+
+1. 检查Nginx配置中的静态资源路径是否正确
+2. 确认.next目录是否正确挂载到Nginx容器
+3. 重建前端服务：
+```bash
+docker-compose build web
+docker-compose up -d --no-deps web
+docker-compose restart nginx
 ```
 
 ### 健康检查与监控
