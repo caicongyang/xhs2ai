@@ -4,10 +4,13 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['picsum.photos'],
+    unoptimized: true,
   },
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
-  output: 'standalone',
+  output: 'export',
   poweredByHeader: false,
+  basePath: '',
+  trailingSlash: true,
 }
 
 module.exports = nextConfig 
