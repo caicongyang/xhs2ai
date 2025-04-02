@@ -44,5 +44,5 @@ ENV PYTHONPATH=/app:$PYTHONPATH
 # Expose port for FastAPI
 EXPOSE 8000
 
-# Command to run the application - using correct module path
-CMD ["python", "-m", "src.start_api_server"] 
+# Command to run the application using module path to ensure imports work correctly
+CMD ["uvicorn", "src.api_service:app", "--host", "0.0.0.0", "--port", "8000"] 
