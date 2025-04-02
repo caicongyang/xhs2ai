@@ -1,9 +1,30 @@
 version: '3.8'
 
 services:
+  # Web frontend service
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    container_name: xhs2ai-web
+    restart: unless-stopped
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    command: npm run dev
+    networks:
+      - xhs2ai-network
+
   # Backend server service
   server:
-    image: xhs2ai-server:latest  # 使用预先构建的镜像
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     container_name: xhs2ai-server
     restart: unless-stopped
     volumes:
@@ -32,9 +53,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - server_outputs:/usr/share/nginx/html/outputs
       - server_templates:/usr/share/nginx/html/templates
-      - ./web/out:/usr/share/nginx/html  # 直接挂载本地构建的静态文件
     depends_on:
       - server
+      - web
     networks:
       - xhs2ai-network
 
