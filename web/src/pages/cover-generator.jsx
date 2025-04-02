@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
 import { Card, CardContent, CardFooter } from '../components/ui/card';
 import { Label } from '../components/ui/label';
 import apiService from '../api/apiService';
+import html2canvas from 'html2canvas';
 
 export default function CoverGeneratorPage() {
   // 状态管理
@@ -18,6 +19,7 @@ export default function CoverGeneratorPage() {
   const [emojiUrl, setEmojiUrl] = useState('');
   const [style, setStyle] = useState('default');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [generatedCover, setGeneratedCover] = useState(null);
   const [taskId, setTaskId] = useState('');
   const [taskStatus, setTaskStatus] = useState('');
@@ -27,6 +29,8 @@ export default function CoverGeneratorPage() {
   
   // 预览iframe引用
   const previewIframeRef = useRef(null);
+  // iframe加载状态
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
 
   // 封面选项
   const [coverStyles, setCoverStyles] = useState([]);
@@ -60,6 +64,71 @@ export default function CoverGeneratorPage() {
     
     fetchCoverStyles();
   }, []);
+
+  // 监听预览HTML的变化，重置iframe加载状态
+  useEffect(() => {
+    if (previewHtml) {
+      setIsIframeLoaded(false);
+    }
+  }, [previewHtml]);
+
+  // 尝试强制重新加载iframe
+  const forceReloadIframe = () => {
+    if (previewIframeRef.current && previewHtml) {
+      console.log('尝试强制重新加载iframe');
+      setIsIframeLoaded(false);
+      
+      // 创建一个临时的URL，添加时间戳以避免缓存
+      const timestamp = Date.now();
+      const cacheBustUrl = previewHtml.includes('?') 
+        ? `${previewHtml}&_bust=${timestamp}` 
+        : `${previewHtml}?_bust=${timestamp}`;
+      
+      // 重新设置URL以强制重载
+      setPreviewHtml('');
+      
+      // 短暂延迟后设置新URL
+      setTimeout(() => {
+        setPreviewHtml(cacheBustUrl);
+      }, 100);
+    }
+  };
+
+  // iframe加载完成的处理函数
+  const handleIframeLoad = () => {
+    console.log('iframe加载事件触发');
+    
+    // 清除任何可能的错误消息
+    setErrorMessage('');
+    
+    // 延迟一点时间再检查iframe内容，确保内容已完全渲染
+    setTimeout(() => {
+      try {
+        if (!previewIframeRef.current) {
+          console.warn('iframe引用丢失');
+          return;
+        }
+        
+        const iframe = previewIframeRef.current;
+        console.log('iframe状态检查:', iframe.contentWindow ? '有contentWindow' : '无contentWindow');
+        
+        // 即使无法访问iframe内容（例如因为跨域限制），也标记为加载完成
+        // 这样用户仍然可以使用"在新窗口打开"功能
+        setIsIframeLoaded(true);
+        
+        // 尝试访问iframe内容，但可能因为跨域限制而失败
+        if (iframe.contentDocument) {
+          console.log('iframe contentDocument可访问，内容已加载');
+        } else {
+          console.log('iframe contentDocument不可访问（可能是跨域限制），但仍然认为已加载');
+        }
+      } catch (err) {
+        console.warn('iframe加载检查出错，但仍然标记为已加载:', err);
+        // 即使检查失败，也将iframe标记为已加载，给用户提供继续操作的能力
+        setIsIframeLoaded(true);
+      }
+    }, 500);
+  };
 
   // 检查任务状态
   useEffect(() => {
@@ -111,12 +180,17 @@ export default function CoverGeneratorPage() {
   // 获取HTML内容
   const fetchHtmlContent = async (url) => {
     try {
+      console.log('正在获取HTML内容，URL:', url);
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP错误: ${response.status} ${response.statusText}`);
+      }
       const html = await response.text();
+      console.log('HTML内容获取成功');
       setHtmlContent(html);
     } catch (error) {
-      console.error('获取HTML内容失败:', error);
-      setErrorMessage('获取HTML内容失败');
+      console.error('获取HTML内容失败:', error.message);
+      setErrorMessage(`获取HTML内容失败: ${error.message}`);
     }
   };
 
@@ -186,36 +260,39 @@ export default function CoverGeneratorPage() {
   };
 
   // 下载为图片
-  const downloadAsImage = () => {
-    if (previewIframeRef.current) {
-      const iframe = previewIframeRef.current;
-      
-      // 确保iframe已加载
-      if (iframe.contentDocument) {
-        // 创建一个新的Canvas
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+  const downloadAsImage = async () => {
+    if (!previewIframeRef.current) {
+      setErrorMessage('预览窗口未初始化');
+      return;
+    }
+    
+    if (!isIframeLoaded) {
+      setErrorMessage('预览内容正在加载中，请稍后再试');
+      return;
+    }
+    
+    // 设置导出状态
+    setIsExporting(true);
+    
+    try {
+      // 直接在新窗口打开预览内容
+      if (previewHtml) {
+        // 记录操作
+        console.log('在新窗口中打开预览内容:', previewHtml);
         
-        // 获取iframe内容大小
-        const width = iframe.contentDocument.documentElement.scrollWidth;
-        const height = iframe.contentDocument.documentElement.scrollHeight;
+        // 打开新窗口显示预览内容
+        window.open(previewHtml, '_blank');
         
-        canvas.width = width;
-        canvas.height = height;
-        
-        // 使用html2canvas或其他库渲染iframe内容
-        // 此处简化为直接创建链接，实际项目需集成html2canvas等库
-        alert('请集成html2canvas库以实现此功能');
-        
-        // 完整实现示例:
-        // html2canvas(iframe.contentDocument.body).then(canvas => {
-        //   const dataUrl = canvas.toDataURL('image/png');
-        //   const link = document.createElement('a');
-        //   link.download = `${platform}-cover-${Date.now()}.png`;
-        //   link.href = dataUrl;
-        //   link.click();
-        // });
+        // 提示用户如何保存
+        setErrorMessage('已在新窗口打开，请使用浏览器的"另存为"或截图功能保存图片');
+      } else {
+        setErrorMessage('预览URL不可用，请重新生成封面');
       }
+    } catch (error) {
+      console.error('打开预览窗口出错:', error);
+      setErrorMessage(`无法打开预览窗口: ${error.message}`);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -262,17 +339,6 @@ export default function CoverGeneratorPage() {
                   <h2 className="text-2xl font-bold mb-6">创建小红书封面</h2>
                   
                   <form onSubmit={handleXiaohongshuSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">标题</Label>
-                      <Input
-                        id="title"
-                        placeholder="输入小红书笔记标题..."
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                      />
-                    </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="content">内容</Label>
                       <Textarea
@@ -341,31 +407,60 @@ export default function CoverGeneratorPage() {
                   <h2 className="text-2xl font-bold mb-6">封面预览</h2>
                   
                   {previewHtml ? (
-                    <div className="w-full aspect-[1/1.4] rounded-lg overflow-hidden border shadow-sm mb-6 relative">
-                      <iframe
-                        ref={previewIframeRef}
-                        src={previewHtml}
-                        className="w-full h-full border-0"
-                        title="封面预览"
-                        sandbox="allow-same-origin"
-                      />
+                    <div className="space-y-4">
+                      <div className="w-full aspect-[1/1.4] rounded-lg overflow-hidden border shadow-sm relative">
+                        <iframe
+                          ref={previewIframeRef}
+                          src={previewHtml}
+                          className="w-full h-full border-0"
+                          title="封面预览"
+                          sandbox="allow-same-origin allow-scripts"
+                          onLoad={handleIframeLoad}
+                        />
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        {!isIframeLoaded && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={forceReloadIframe}
+                          >
+                            重新加载预览
+                          </Button>
+                        )}
+                        
+                        {generatedCover && (
+                          <div className="flex space-x-2 ml-auto">
+                            <Button 
+                              variant="outline" 
+                              onClick={downloadAsImage}
+                              disabled={isExporting || !isIframeLoaded}
+                            >
+                              {isExporting ? "正在打开..." : 
+                               !isIframeLoaded ? "预览加载中..." : 
+                               "打开并保存图片"}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {errorMessage && errorMessage.includes('已在新窗口打开') && (
+                        <div className="mt-2 p-3 bg-blue-50 text-blue-700 rounded text-sm">
+                          <p><strong>保存图片提示:</strong></p>
+                          <ol className="list-decimal ml-5 mt-1">
+                            <li>在新打开的窗口中右键点击图片</li>
+                            <li>选择"另存为图片"或"图片另存为"</li>
+                            <li>或使用截图工具直接截取图片</li>
+                          </ol>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="w-full aspect-[1/1.4] rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
                       <p className="text-gray-500 dark:text-gray-400 text-center px-4">
                         {isGenerating ? "正在生成封面..." : "填写表单并生成封面预览"}
                       </p>
-                    </div>
-                  )}
-                  
-                  {generatedCover && (
-                    <div className="flex justify-end space-x-3">
-                      <Button variant="outline" onClick={copyHtmlContent}>
-                        复制HTML
-                      </Button>
-                      <Button variant="outline" onClick={downloadAsImage}>
-                        下载图片
-                      </Button>
                     </div>
                   )}
                 </div>
@@ -385,12 +480,12 @@ export default function CoverGeneratorPage() {
                         }}
                       >
                         <div>
-                          <h3 className="font-bold mb-2">{styleItem.name}</h3>
+                          <h3 className="font-bold mb-2">{getStyleNameChinese(styleItem.id)}</h3>
                           <p className="text-sm opacity-80">{styleItem.description}</p>
                         </div>
                       </div>
                       <CardContent className="p-4">
-                        <h3 className="font-medium">小红书模板 - {styleItem.name}</h3>
+                        <h3 className="font-medium">小红书模板 - {getStyleNameChinese(styleItem.id)}</h3>
                       </CardContent>
                       <CardFooter className="p-4 pt-0">
                         <Button 
@@ -473,31 +568,60 @@ export default function CoverGeneratorPage() {
                   <h2 className="text-2xl font-bold mb-6">封面预览</h2>
                   
                   {previewHtml ? (
-                    <div className="w-full aspect-[900/383] rounded-lg overflow-hidden border shadow-sm mb-6">
-                      <iframe
-                        ref={previewIframeRef}
-                        src={previewHtml}
-                        className="w-full h-full border-0"
-                        title="封面预览"
-                        sandbox="allow-same-origin"
-                      />
+                    <div className="space-y-4">
+                      <div className="w-full aspect-[900/383] rounded-lg overflow-hidden border shadow-sm relative">
+                        <iframe
+                          ref={previewIframeRef}
+                          src={previewHtml}
+                          className="w-full h-full border-0"
+                          title="封面预览"
+                          sandbox="allow-same-origin allow-scripts"
+                          onLoad={handleIframeLoad}
+                        />
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        {!isIframeLoaded && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={forceReloadIframe}
+                          >
+                            重新加载预览
+                          </Button>
+                        )}
+                        
+                        {generatedCover && (
+                          <div className="flex space-x-2 ml-auto">
+                            <Button 
+                              variant="outline" 
+                              onClick={downloadAsImage}
+                              disabled={isExporting || !isIframeLoaded}
+                            >
+                              {isExporting ? "正在打开..." : 
+                               !isIframeLoaded ? "预览加载中..." : 
+                               "打开并保存图片"}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {errorMessage && errorMessage.includes('已在新窗口打开') && (
+                        <div className="mt-2 p-3 bg-blue-50 text-blue-700 rounded text-sm">
+                          <p><strong>保存图片提示:</strong></p>
+                          <ol className="list-decimal ml-5 mt-1">
+                            <li>在新打开的窗口中右键点击图片</li>
+                            <li>选择"另存为图片"或"图片另存为"</li>
+                            <li>或使用截图工具直接截取图片</li>
+                          </ol>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="w-full aspect-[900/383] rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
                       <p className="text-gray-500 dark:text-gray-400 text-center px-4">
                         {isGenerating ? "正在生成封面..." : "填写表单并生成封面预览"}
                       </p>
-                    </div>
-                  )}
-                  
-                  {generatedCover && (
-                    <div className="flex justify-end space-x-3">
-                      <Button variant="outline" onClick={copyHtmlContent}>
-                        复制HTML
-                      </Button>
-                      <Button variant="outline" onClick={downloadAsImage}>
-                        下载图片
-                      </Button>
                     </div>
                   )}
                 </div>
@@ -517,12 +641,12 @@ export default function CoverGeneratorPage() {
                         }}
                       >
                         <div>
-                          <h3 className="font-bold mb-2">{styleItem.name}</h3>
+                          <h3 className="font-bold mb-2">{getStyleNameChinese(styleItem.id)}</h3>
                           <p className="text-sm opacity-80">{styleItem.description}</p>
                         </div>
                       </div>
                       <CardContent className="p-4">
-                        <h3 className="font-medium">微信模板 - {styleItem.name}</h3>
+                        <h3 className="font-medium">微信模板 - {getStyleNameChinese(styleItem.id)}</h3>
                       </CardContent>
                       <CardFooter className="p-4 pt-0">
                         <Button 
@@ -610,4 +734,22 @@ function getDarkerColorForStyle(styleId) {
 function getTextColorForStyle(styleId) {
   const darkStylesText = ['industrial_punk', 'constructivism', 'tech_blue'];
   return darkStylesText.includes(styleId) ? '#ffffff' : '#000000';
+}
+
+// 获取风格ID对应的中文名称
+function getStyleNameChinese(styleId) {
+  const nameMap = {
+    'default': '默认风格',
+    'soft_tech': '柔和科技卡片风',
+    'business': '商务风格',
+    'tech_blue': '科技蓝风格',
+    'minimalist': '极简风格',
+    'digital_ticket': '数字票券风',
+    'constructivism': '构成主义风格',
+    'luxury_nature': '奢华自然风',
+    'industrial_punk': '工业朋克风',
+    'cute_knowledge': '萌系知识卡片',
+    'business_card': '商务卡片风'
+  };
+  return nameMap[styleId] || styleId;
 } 

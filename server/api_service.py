@@ -586,10 +586,13 @@ def rewrite_url_content(request: UrlContentRewriteRequest):
 def rewrite_title(request: TitleRewriteRequest):
     """重写标题"""
     try:
-        # 使用原有的 rewrite_title 方法
+        # 确保 style 参数存在，默认为 'mimeng'
+        style = request.style if request.style else 'mimeng'
+        
+        # 使用 title_rewriter 重写标题
         rewritten_title = title_rewriter.rewrite_title(
-            content=request.title,  # 使用 title 作为内容
-            style=request.style if hasattr(request, 'style') else None  # 如果请求中有 style 参数则使用
+            content=request.title,
+            style=style
         )
         
         return {

@@ -39,7 +39,7 @@ const checkTaskStatus = async (taskId) => {
 };
 
 // 获取生成的文件
-const getFile = async (filePath) => {
+const getFile = (filePath) => {
   return `${API_BASE_URL}/api/files/${filePath}`;
 };
 

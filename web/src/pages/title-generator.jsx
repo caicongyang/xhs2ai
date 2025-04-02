@@ -16,12 +16,9 @@ export default function TitleRewriterPage() {
 
   // 风格选项
   const styleOptions = [
-    { id: '', name: '默认风格' },
-    { id: 'viral', name: '病毒式传播' },
-    { id: 'professional', name: '专业商务' },
-    { id: 'clickbait', name: '吸引点击' },
-    { id: 'seo', name: 'SEO优化' },
-    { id: 'creative', name: '创意标题' }
+    { id: '咪蒙体', name: '咪蒙体' },
+    { id: '震惊体', name: '震惊体' },
+    { id: '悬念体', name: '悬念体' }
   ];
 
   // 提交标题重写请求
@@ -32,7 +29,7 @@ export default function TitleRewriterPage() {
     setErrorMessage('');
     
     try {
-      const result = await apiService.title.rewriteTitle(title, titleStyle || undefined);
+      const result = await apiService.title.rewriteTitle(title, titleStyle || '咪蒙体');
       if (result && result.success) {
         setRewrittenTitle(result.rewritten_title);
       } else {

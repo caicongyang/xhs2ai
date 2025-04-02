@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书封面设计</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --secondary-blue: #4285f4;
+            --light-blue: #e8f0fe;
+            --dark-blue: #0d47a1;
+            --white: #ffffff;
+            --black: #202124;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .save-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 500;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .save-btn:hover {
+            background-color: var(--dark-blue);
+        }
+        
+        .cover-container {
+            width: 375px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--white) 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .content {
+            padding: 40px;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--black);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .highlight {
+            color: var(--primary-blue);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: rgba(66, 133, 244, 0.2);
+            z-index: -1;
+            border-radius: 2px;
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--black);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .desc {
+            font-size: 16px;
+            color: #5f6368;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .footer {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #5f6368;
+        }
+        
+        .account {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-right: 10px;
+        }
+        
+        .slogan {
+            font-weight: 500;
+        }
+        
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+        }
+        
+        .circle-1 {
+            width: 200px;
+            height: 200px;
+            top: -50px;
+            right: -50px;
+        }
+        
+        .circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: -30px;
+            left: -30px;
+        }
+        
+        .flow-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+            opacity: 0.3;
+        }
+        
+        .line-1 {
+            width: 300px;
+            top: 100px;
+            left: -100px;
+            transform: rotate(15deg);
+        }
+        
+        .line-2 {
+            width: 250px;
+            bottom: 80px;
+            right: -80px;
+            transform: rotate(-10deg);
+        }
+    </style>
+</head>
+<body>
+    <button class="save-btn" id="saveBtn">
+        <i class="fas fa-download"></i> 保存封面
+    </button>
+    
+    <div class="cover-container" id="cover">
+        <div class="content">
+            <div>
+                <h1 class="title">
+                    <span class="highlight">一个文件</span>搞定所有笔记<br>
+                    Andrej Karpathy的<span class="highlight">极简记录法</span>
+                </h1>
+                <p class="subtitle">AI大神的高效笔记系统：纯文本+标签管理</p>
+                <p class="desc">
+                    非项目笔记只用单个备忘录文件<br>
+                    用watch:/read:/listen:标签分类<br>
+                    定期"救回"有价值内容到顶部
+                </p>
+            </div>
+            <div class="footer">
+                <span class="account">歸藏(guizang.ai)</span>
+                <span class="slogan">跟着tom学AI</span>
+            </div>
+        </div>
+        
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="flow-line line-1"></div>
+        <div class="flow-line line-2"></div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            html2canvas(document.getElementById('cover')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '小红书封面.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>

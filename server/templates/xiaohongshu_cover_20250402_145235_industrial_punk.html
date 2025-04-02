@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书封面</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --neon: #F9FF00;
+            --gray: #333333;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 375px;
+        }
+        
+        .save-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--neon);
+            color: var(--black);
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .cover {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background-color: var(--black);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .content {
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .title {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--white);
+            line-height: 1.2;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .title span {
+            color: var(--neon);
+            text-shadow: 0 0 10px rgba(249, 255, 0, 0.5);
+            position: relative;
+        }
+        
+        .title span::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--neon);
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: var(--white);
+            line-height: 1.5;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .desc {
+            font-size: 12px;
+            color: var(--white);
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            font-size: 10px;
+            color: var(--neon);
+            border: 1px solid var(--neon);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        
+        .author {
+            font-size: 14px;
+            color: var(--neon);
+            font-weight: 700;
+            margin-top: 20px;
+        }
+        
+        .slogan {
+            font-size: 10px;
+            color: var(--white);
+            opacity: 0.6;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        
+        .decoration {
+            position: absolute;
+            color: var(--gray);
+            font-size: 200px;
+            opacity: 0.05;
+            z-index: 0;
+        }
+        
+        .decoration-1 {
+            top: -50px;
+            right: -50px;
+            transform: rotate(15deg);
+        }
+        
+        .decoration-2 {
+            bottom: -50px;
+            left: -50px;
+            transform: rotate(-15deg);
+        }
+        
+        .highlight {
+            background-color: var(--neon);
+            color: var(--black);
+            padding: 0 5px;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cover" id="cover">
+            <div class="decoration decoration-1">#</div>
+            <div class="decoration decoration-2">#</div>
+            <div class="content">
+                <div>
+                    <div class="title">
+                        <span>极简</span>笔记法<br>
+                        一个文件<span>搞定</span>一切
+                    </div>
+                    <div class="subtitle">
+                        Andrej Karpathy的<span class="highlight">高效知识管理</span>秘籍
+                    </div>
+                    <div class="desc">
+                        只用单个备忘录文件 · 纯文本记录 · 标签分类<br>
+                        顶部添加新内容 · 定期回顾筛选 · 简单复制"救回"
+                    </div>
+                    <div class="tags">
+                        <div class="tag">#效率工具</div>
+                        <div class="tag">#知识管理</div>
+                        <div class="tag">#极简主义</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="author">歸藏(guizang.ai)</div>
+                    <div class="slogan">正儿八经学AI</div>
+                </div>
+            </div>
+        </div>
+        <button class="save-btn" id="saveBtn">
+            <i class="fas fa-download"></i> 保存封面
+        </button>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const element = document.getElementById('cover');
+            
+            html2canvas(element, {
+                backgroundColor: '#000000',
+                scale: 2,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '小红书封面.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>

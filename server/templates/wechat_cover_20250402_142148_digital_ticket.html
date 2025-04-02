@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信公众号封面设计</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .ticket-style {
+            background-color: #000;
+            color: white;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-cover {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        .share-cover {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+        }
+        .main-title {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            line-height: 1.2;
+            position: absolute;
+            z-index: 10;
+        }
+        .share-text {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .decoration-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
+        .corner-mark {
+            position: absolute;
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        .emoji {
+            position: absolute;
+            z-index: 5;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .download-btn {
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="ticket-style w-full" style="aspect-ratio: 3.35/1; display: flex; background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);">
+            <!-- 主封面区域 -->
+            <div class="main-cover relative" style="flex: 2.35; background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);">
+                <div class="absolute inset-0 flex items-center justify-center p-8">
+                    <h1 class="main-title text-white text-4xl md:text-5xl lg:text-6xl" style="width: 90%;">
+                        <span class="block">一套提示词帮你实现</span>
+                        <span class="block">小红书、公众号封面自由</span>
+                        <span class="block text-2xl md:text-3xl mt-4 font-medium">Deepseek V3也能用！</span>
+                    </h1>
+                </div>
+                
+                <!-- 装饰元素 -->
+                <div class="decoration-line" style="top: 20%;"></div>
+                <div class="decoration-line" style="bottom: 20%;"></div>
+                
+                <div class="corner-mark" style="top: 10px; left: 10px;">@AI DESIGN PROMPT</div>
+                <div class="corner-mark" style="bottom: 10px; right: 10px;">2024</div>
+                
+                <!-- Emoji装饰 -->
+                <img src="https://s2.loli.net/2025/03/24/pBmlncEYkodSVA6.png" alt="emoji" class="emoji" style="width: 60px; bottom: 20px; left: 20px;">
+            </div>
+            
+            <!-- 朋友圈分享封面 -->
+            <div class="share-cover" style="flex: 1; background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%); border-left: 1px dashed #333;">
+                <div class="share-text text-3xl md:text-4xl">封面自由</div>
+                <div class="share-text text-3xl md:text-4xl">AI提示</div>
+                
+                <!-- 装饰元素 -->
+                <div class="absolute bottom-2 right-2 text-xs opacity-50">SHARE TO MOMENTS</div>
+                <div class="absolute top-2 right-2 text-xs opacity-50 rotate-90">AI DESIGN</div>
+            </div>
+        </div>
+        
+        <!-- 下载按钮 -->
+        <div class="mt-6 text-center">
+            <button id="downloadBtn" class="download-btn bg-black text-white px-6 py-3 rounded-none font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+                <i class="fas fa-download mr-2"></i>下载封面图片
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            // 创建一个canvas元素
+            const container = document.querySelector('.ticket-style');
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+            
+            // 使用html2canvas库来捕获元素并下载
+            // 这里需要实际项目中引入html2canvas库
+            alert('在实际项目中，这里会使用html2canvas库将设计转换为图片并下载。\n\n请确保已引入html2canvas库：\n<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"><\/script>');
+            
+            // 实际实现示例：
+            /*
+            html2canvas(container).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'wechat-cover-design.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+            */
+        });
+    </script>
+</body>
+</html>

@@ -16,7 +16,7 @@ export default function ContentRewriterPage() {
   
   // 风格重写状态
   const [styleContent, setStyleContent] = useState('');
-  const [selectedStyle, setSelectedStyle] = useState('xiaohongshu');
+  const [selectedStyle, setSelectedStyle] = useState('咪蒙体');
   const [isStyleProcessing, setIsStyleProcessing] = useState(false);
   const [styledResult, setStyledResult] = useState('');
   const [styleError, setStyleError] = useState('');
@@ -67,11 +67,8 @@ export default function ContentRewriterPage() {
 
   // 风格选项
   const styleOptions = [
-    { id: 'xiaohongshu', name: '小红书风格', description: '轻松活泼、带有表情符号的风格' },
-    { id: 'professional', name: '专业风格', description: '正式、专业的商务风格' },
-    { id: 'academic', name: '学术风格', description: '严谨、引用丰富的学术风格' },
-    { id: 'conversational', name: '对话风格', description: '轻松、口语化的对话风格' },
-    { id: 'poetic', name: '诗意风格', description: '优美、富有意境的文学风格' }
+    { id: '咪蒙体', name: '咪蒙体', description: '情感共鸣、故事性强的内容风格' },
+    { id: '公众号爆款文', name: '公众号爆款文', description: '吸引眼球、传播性强的内容风格' }
   ];
 
   return (
