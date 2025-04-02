@@ -10,6 +10,20 @@ const nextConfig = {
   output: 'export',
   poweredByHeader: false,
   basePath: '',
+  exportPathMap: async function (
+    defaultPathMap,
+    { dev, dir, outDir, distDir, buildId }
+  ) {
+    return {
+      '/': { page: '/' },
+      '/title-generator': { page: '/title-generator' },
+      '/content-rewriter': { page: '/content-rewriter' },
+      '/cover-generator': { page: '/cover-generator' },
+      '/image-generator': { page: '/image-generator' },
+      '/video-generator': { page: '/video-generator' },
+      '/history': { page: '/history' },
+    };
+  },
   trailingSlash: true,
 }
 

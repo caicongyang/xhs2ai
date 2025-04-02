@@ -12,7 +12,30 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost/api
-    command: sh -c "npm ci && npm run build && echo '静态文件已生成' && tail -f /dev/null"
+      - NPM_CONFIG_FETCH_TIMEOUT=300000
+      - NPM_CONFIG_TIMEOUT=300000
+    command: >
+      sh -c "
+        echo '=== 开始构建前端静态文件 ===' &&
+        npm config set fetch-timeout 300000 &&
+        npm config set timeout 300000 &&
+        npm ci &&
+        npm run build &&
+        echo '=== 检查构建结果 ===' &&
+        ls -la out/ &&
+        if [ ! -f out/index.html ]; then
+          echo '错误：未找到 index.html 文件' &&
+          exit 1;
+        else
+          echo '=== 前端构建成功 ===';
+        fi
+      "
+    healthcheck:
+      test: ["CMD", "ls", "-la", "/app/out/index.html"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     networks:
       - xhs2ai-network
 
@@ -49,9 +72,12 @@ services:
       - server_outputs:/usr/share/nginx/html/outputs
       - server_templates:/usr/share/nginx/html/templates
       - web_build:/usr/share/nginx/html  # 使用共享卷挂载静态文件
+      - ./web/public:/usr/share/nginx/html/public # 直接挂载public文件夹
     depends_on:
-      - web
-      - server
+      web:
+        condition: service_completed_successfully
+      server:
+        condition: service_started
     networks:
       - xhs2ai-network
 
@@ -65,4 +91,4 @@ volumes:
   server_images:
   server_videos:
   server_videos2:
-  web_build:  # 新增共享卷，用于web和nginx之间共享构建结果 
+  web_build:  # 用于web和nginx之间共享构建结果 
