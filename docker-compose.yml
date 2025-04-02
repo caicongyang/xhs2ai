@@ -15,6 +15,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost/api
+      - PORT=3000
     depends_on:
       - server
     networks:
@@ -52,6 +53,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - server_outputs:/usr/share/nginx/html/outputs
       - server_templates:/usr/share/nginx/html/templates
+      - ./web/.next/static:/usr/share/nginx/html/_next/static
     depends_on:
       - web
       - server

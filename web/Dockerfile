@@ -30,6 +30,7 @@ RUN mkdir -p public
 
 # Copy only necessary files for production
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package-lock.json ./package-lock.json
 COPY --from=builder /app/next.config.js ./next.config.js
 
 # Copy node_modules (only production dependencies)
@@ -38,7 +39,7 @@ COPY --from=builder /app/node_modules ./node_modules
 # Copy public directory (if exists)
 COPY --from=builder /app/public ./public
 
-# Copy built app
+# Copy the entire .next directory
 COPY --from=builder /app/.next ./.next
 
 # Expose Next.js port
