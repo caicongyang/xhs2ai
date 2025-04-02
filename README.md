@@ -11,6 +11,7 @@ XHS2AI是一个利用AI模型生成图片、视频、封面和文本内容的综
 - Docker Engine (20.10+)
 - Docker Compose (3.8+)
 - Git
+- Node.js 18+ (仅用于构建前端)
 
 ### 快速部署
 
@@ -38,55 +39,41 @@ LLM_BASE_URL=your_actual_api_base_url
 # ...
 ```
 
-#### 3. 构建和启动服务
+#### 3. 分步构建
 
-**一键构建并启动所有服务：**
+我们采用了构建与部署分离的方式，使流程更加可控和稳定。
+
+**构建前端静态文件：**
+
+```bash
+# 添加执行权限
+chmod +x build-frontend.sh
+
+# 构建前端静态文件
+./build-frontend.sh
+```
+
+**构建后端服务镜像：**
+
+```bash
+# 添加执行权限
+chmod +x build-server.sh
+
+# 构建后端服务镜像
+./build-server.sh
+```
+
+#### 4. 启动服务
+
+构建完成后，使用以下命令启动服务：
 
 ```bash
 docker-compose up -d
 ```
 
-这个命令会自动执行以下操作：
-- 构建前端静态文件
-- 构建并启动后端服务
-- 启动Nginx服务提供前端静态文件和代理API请求
-
-**只构建和启动特定服务：**
-
-```bash
-# 只构建server服务
-docker-compose build server
-
-# 只构建并启动server服务
-docker-compose up -d --build server
-```
-
-**重新构建前端：**
-
-```bash
-# 重新构建前端并重启依赖它的服务
-docker-compose up -d --build web
-```
-
-**重新构建并启动所有服务：**
-
-```bash
-# 停止现有容器，重新构建并启动
-docker-compose down && docker-compose up -d --build
-```
-
-**修改代码后重新构建：**
-
-```bash
-# 1. 修改前端代码后重新构建前端服务
-docker-compose up -d --build web
-
-# 2. 修改后端代码后重新构建server服务
-docker-compose up -d --build server
-
-# 3. 修改Nginx配置后重启nginx服务
-docker-compose up -d --no-deps nginx
-```
+这个命令会启动：
+- 使用预构建的后端服务镜像
+- Nginx服务，提供前端静态文件和代理API请求
 
 **查看日志：**
 
@@ -96,29 +83,35 @@ docker-compose logs -f
 
 # 查看特定服务日志
 docker-compose logs -f server
-
-# 查看前端构建日志
-docker-compose logs -f web
 ```
 
-#### 4. 访问应用
+#### 5. 访问应用
 
 - 网页界面: http://localhost:8081
 - API文档: http://localhost:8081/api/docs
 
-### 开发环境配置
+### 更新应用
 
-开发环境支持热重载，便于开发调试：
+当需要更新应用时，只需重新构建对应部分：
+
+**更新前端：**
 
 ```bash
-# 启动开发环境
-docker-compose -f docker-compose.dev.yml up -d
+# 构建前端静态文件
+./build-frontend.sh
 
-# 仅启动前端开发环境
-cd web && npm run dev
+# 重启Nginx服务
+docker-compose restart nginx
+```
 
-# 仅启动后端开发环境
-docker-compose -f docker-compose.dev.yml up -d server
+**更新后端：**
+
+```bash
+# 构建后端服务镜像
+./build-server.sh
+
+# 重启服务
+docker-compose up -d server
 ```
 
 ### Docker服务说明
@@ -127,7 +120,6 @@ docker-compose -f docker-compose.dev.yml up -d server
 
 | 服务 | 描述 | 暴露端口 |
 |-----|------|---------|
-| `web` | 前端构建服务，生成静态文件 | 无 |
 | `server` | Python FastAPI后端服务 | 内部8000端口 |
 | `nginx` | Nginx网关和反向代理 | 外部8081端口 |
 
@@ -140,38 +132,53 @@ docker-compose -f docker-compose.dev.yml up -d server
 - `server_images`: 存储生成的图片
 - `server_videos`: 存储海螺生成的视频
 - `server_videos2`: 存储其他视频
-- `web_build`: 存储前端构建的静态文件
 
 ### 工作原理
 
 项目采用前后端分离架构：
 
 1. **前端构建流程**:
-   - `web` 服务使用Next.js将React应用构建为静态HTML/CSS/JS文件
-   - 构建结果保存在Docker卷 `web_build` 中
+   - 通过`build-frontend.sh`脚本在本地构建静态HTML/CSS/JS文件
+   - 构建结果保存在`web/out`目录中
 
-2. **静态文件服务**:
-   - `nginx` 服务挂载 `web_build` 卷，直接提供静态文件
-   - 所有前端资源都由Nginx提供服务，不需要Node.js运行时
+2. **后端构建流程**:
+   - 通过`build-server.sh`脚本构建Docker镜像
+   - 镜像名称为`xhs2ai-server:latest`
 
-3. **API请求处理**:
-   - 浏览器中的前端应用向 `/api` 路径发送请求
-   - `nginx` 服务将这些请求代理到 `server` 服务
-   - `server` 服务处理API请求并返回结果
+3. **静态文件服务**:
+   - Nginx容器直接挂载本地的`web/out`目录
+   - 所有前端资源都由Nginx提供服务
+
+4. **API请求处理**:
+   - 浏览器中的前端应用向`/api`路径发送请求
+   - Nginx服务将这些请求代理到`server`服务
+   - `server`服务处理API请求并返回结果
 
 ### 常见问题与解决方案
 
 #### 前端构建问题
 
-如果前端构建失败或网页显示不正确：
-
+如果前端构建失败：
 ```bash
-# 查看前端构建日志
-docker-compose logs -f web
+# 检查Node.js版本
+node -v  # 应该是v18+
 
-# 强制重新构建前端
-docker-compose build --no-cache web
-docker-compose up -d
+# 手动构建查看详细错误
+cd web
+npm ci
+npm run build
+```
+
+#### 后端构建问题
+
+如果后端镜像构建失败：
+```bash
+# 检查Docker是否正常运行
+docker info
+
+# 手动构建查看详细错误
+cd server
+docker build -t xhs2ai-server:latest .
 ```
 
 #### 权限问题
@@ -190,18 +197,6 @@ sudo chown -R $(id -u):$(id -g) ./server/outputs ./server/templates
 nginx:
   ports:
     - "8080:80"  # 将8081改为其他可用端口
-```
-
-#### 重启服务
-
-更新代码或配置后重启服务：
-
-```bash
-# 重启所有服务
-docker-compose restart
-
-# 重启特定服务
-docker-compose restart server
 ```
 
 ### 健康检查与监控

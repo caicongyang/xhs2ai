@@ -1,48 +1,9 @@
 version: '3.8'
 
 services:
-  # Web前端构建服务
-  web:
-    build:
-      context: ./web
-    container_name: xhs2ai-web-builder
-    volumes:
-      - ./web:/app
-      - web_build:/app/out
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost/api
-      - NPM_CONFIG_FETCH_TIMEOUT=300000
-      - NPM_CONFIG_TIMEOUT=300000
-    command: >
-      sh -c "
-        echo '=== 开始构建前端静态文件 ===' &&
-        npm config set fetch-timeout 300000 &&
-        npm config set timeout 300000 &&
-        npm ci &&
-        npm run build &&
-        echo '=== 检查构建结果 ===' &&
-        ls -la out/ &&
-        if [ ! -f out/index.html ]; then
-          echo '错误：未找到 index.html 文件' &&
-          exit 1;
-        else
-          echo '=== 前端构建成功 ===';
-        fi
-      "
-    healthcheck:
-      test: ["CMD", "ls", "-la", "/app/out/index.html"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-    networks:
-      - xhs2ai-network
-
   # Backend server service
   server:
-    build:
-      context: ./server
+    image: xhs2ai-server:latest  # 使用预先构建的镜像
     container_name: xhs2ai-server
     restart: unless-stopped
     volumes:
@@ -71,13 +32,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - server_outputs:/usr/share/nginx/html/outputs
       - server_templates:/usr/share/nginx/html/templates
-      - web_build:/usr/share/nginx/html  # 使用共享卷挂载静态文件
-      - ./web/public:/usr/share/nginx/html/public # 直接挂载public文件夹
+      - ./web/out:/usr/share/nginx/html  # 直接挂载本地构建的静态文件
     depends_on:
-      web:
-        condition: service_completed_successfully
-      server:
-        condition: service_started
+      - server
     networks:
       - xhs2ai-network
 
@@ -90,5 +47,4 @@ volumes:
   server_templates:
   server_images:
   server_videos:
-  server_videos2:
-  web_build:  # 用于web和nginx之间共享构建结果 
+  server_videos2: 
