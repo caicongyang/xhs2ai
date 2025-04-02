@@ -1,41 +1,66 @@
 version: '3.8'
 
 services:
-  # Web frontend service (development mode)
+  # Web frontend service - 开发模式
   web:
     build:
       context: ./web
       dockerfile: Dockerfile.dev
-    container_name: xhs2ai-web-dev
+    container_name: xhs2ai-web
     restart: unless-stopped
     volumes:
       - ./web:/app
       - /app/node_modules
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
-    command: npm run dev
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
+      - NEXT_PUBLIC_API_URL=/api
+    command: npm run dev -- -H 0.0.0.0
     networks:
       - xhs2ai-network
 
-  # Backend server service (development mode)
+  # Backend server service
   server:
     build:
       context: ./server
-    container_name: xhs2ai-server-dev
+      dockerfile: Dockerfile
+    container_name: xhs2ai-server
     restart: unless-stopped
+    expose:
+      - "8000"
     volumes:
-      - ./server:/app
+      - ./server/src:/app/src
+      - ./server/.env:/app/.env
       - server_outputs:/app/outputs
       - server_templates:/app/templates
-    ports:
-      - "8000:8000"
+      - server_images:/app/generated_images
+      - server_videos:/app/minimaxi_videos
+      - server_videos2:/app/videos
     environment:
       - LLM_API_KEY=${LLM_API_KEY}
       - LLM_BASE_URL=${LLM_BASE_URL}
-    command: uvicorn api_service:app --host 0.0.0.0 --port 8000 --reload
+      - PYTHONPATH=/app
+      - BASE_URL=/
+    networks:
+      - xhs2ai-network
+
+  # Nginx service - 唯一对外暴露的服务
+  nginx:
+    image: nginx:alpine
+    container_name: xhs2ai-nginx
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/default.conf
+      - server_outputs:/usr/share/nginx/html/outputs
+      - server_templates:/usr/share/nginx/html/templates
+    depends_on:
+      - server
+      - web
     networks:
       - xhs2ai-network
 
@@ -45,4 +70,7 @@ networks:
 
 volumes:
   server_outputs:
-  server_templates: 
+  server_templates:
+  server_images:
+  server_videos:
+  server_videos2: 

@@ -46,7 +46,7 @@ docker-compose up -d
 ```
 
 这个命令会同时：
-- 构建并启动前端Node.js开发服务器（自动热更新）
+- 构建并启动前端Next.js生产服务器
 - 构建并启动后端FastAPI服务
 - 启动Nginx服务，提供API代理和统一访问入口
 
@@ -84,7 +84,7 @@ docker-compose up -d --build
 
 | 服务 | 描述 | 暴露端口 |
 |-----|------|---------|
-| `web` | Next.js前端开发服务 | 内部3000端口 |
+| `web` | Next.js前端服务 | 内部3000端口 |
 | `server` | Python FastAPI后端服务 | 内部8000端口 |
 | `nginx` | Nginx网关和反向代理 | 外部8081端口 |
 
@@ -98,13 +98,40 @@ docker-compose up -d --build
 - `server_videos`: 存储海螺生成的视频
 - `server_videos2`: 存储其他视频
 
+### 部署模式
+
+项目支持两种部署模式：
+
+#### 生产模式（默认）
+
+适用于正式环境，性能和安全性优先：
+
+- 前端代码预先构建，优化加载速度
+- 无热重载，修改代码需重新构建
+- 无WebSocket连接，减少资源消耗
+
+#### 开发模式
+
+适用于开发环境，方便调试：
+
+```bash
+# 切换到开发模式
+cp docker-compose.dev.yml docker-compose.yml
+docker-compose up -d --build
+```
+
+特点：
+- 支持前端代码热重载
+- 有WebSocket连接(`wss://_next/webpack-hmr`)
+- 便于实时调试前端代码
+
 ### 工作原理
 
 项目采用前后端分离架构：
 
-1. **前端开发服务**:
-   - Node.js运行Next.js开发服务器
-   - 支持热更新和实时预览
+1. **前端服务**:
+   - Node.js运行Next.js服务
+   - 生产模式下预编译静态资源
 
 2. **后端服务**:
    - Python FastAPI提供API接口
@@ -144,11 +171,16 @@ nginx:
 
 ### 开发方式
 
-使用此部署方式，前端代码修改会自动热重载，无需手动构建：
+如需在生产环境进行开发调试，可切换到开发模式：
 
-1. 修改`web`目录中的前端代码
-2. 保存文件后，Next.js开发服务器会自动重新编译
-3. 刷新浏览器即可查看更改
+```bash
+# 创建开发环境配置备份
+cp docker-compose.yml docker-compose.prod.yml
+# 使用开发环境配置
+cp docker-compose.dev.yml docker-compose.yml
+# 重启服务
+docker-compose up -d --build
+```
 
 后端代码修改后，需要重新构建：
 
