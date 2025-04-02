@@ -13,14 +13,14 @@ import time
 from datetime import datetime
 
 # 导入各个功能模块
-from minimaxi_image_generator import MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat
-from minimaxi_video_generator import MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType
-from keling_video_generator import VideoGenerator as KlingVideoGenerator
-from keling_image_generator import ImageGenerator as KlingImageGenerator, ImageStyle as KlingImageStyle, ImageRatio
-from cover_generator import CoverGenerator, CoverStyle
-from url_content_rewriter import UrlContentRewriter
-from title_rewriter import TitleRewriter
-from content_style_rewriter import ContentStyleRewriter
+from .minimaxi_image_generator import MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat
+from .minimaxi_video_generator import MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType
+from .keling_video_generator import VideoGenerator as KlingVideoGenerator
+from .keling_image_generator import ImageGenerator as KlingImageGenerator, ImageStyle as KlingImageStyle, ImageRatio
+from .cover_generator import CoverGenerator, CoverStyle
+from .url_content_rewriter import UrlContentRewriter
+from .title_rewriter import TitleRewriter
+from .content_style_rewriter import ContentStyleRewriter
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

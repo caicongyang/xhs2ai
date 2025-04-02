@@ -38,11 +38,11 @@ RUN mkdir -p videos
 # Set proper permissions
 RUN chmod -R 755 /app
 
-# Add src directory to Python path
+# Add app directory to Python path
 ENV PYTHONPATH=/app:$PYTHONPATH
 
 # Expose port for FastAPI
 EXPOSE 8000
 
-# Command to run the application - adjust the path to main file
-CMD ["uvicorn", "src.api_service:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Command to run the application - using correct module path
+CMD ["python", "-m", "src.start_api_server"] 

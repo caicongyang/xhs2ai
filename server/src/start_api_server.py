@@ -17,7 +17,8 @@ args = parser.parse_args()
 if __name__ == "__main__":
     # 添加当前路径到Python路径
     import sys
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.dirname(current_dir))  # 添加父目录到路径
     
     print(f"启动AI内容生成服务API服务器:")
     print(f"- 地址: {args.host}")
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     
     # 启动API服务器
     uvicorn.run(
-        "api_service:app", 
+        "src.api_service:app", 
         host=args.host, 
         port=args.port, 
         reload=args.reload,
