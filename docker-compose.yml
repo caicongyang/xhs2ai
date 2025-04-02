@@ -27,12 +27,17 @@ services:
     container_name: xhs2ai-server
     restart: unless-stopped
     volumes:
-      - ./server:/app
+      - ./server/src:/app/src
+      - ./server/.env:/app/.env
       - server_outputs:/app/outputs
       - server_templates:/app/templates
+      - server_images:/app/generated_images
+      - server_videos:/app/minimaxi_videos
+      - server_videos2:/app/videos
     environment:
       - LLM_API_KEY=${LLM_API_KEY}
       - LLM_BASE_URL=${LLM_BASE_URL}
+      - PYTHONPATH=/app
     networks:
       - xhs2ai-network
 
@@ -59,4 +64,7 @@ networks:
 
 volumes:
   server_outputs:
-  server_templates: 
+  server_templates:
+  server_images:
+  server_videos:
+  server_videos2: 

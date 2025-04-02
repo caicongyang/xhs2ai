@@ -2,10 +2,18 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies for Python packages and image processing
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libffi-dev \
+    # 图像处理相关依赖
+    zlib1g-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    # 清理
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -13,18 +21,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the source code
-COPY . .
+# Copy the src directory to app directory
+COPY src/ ./src/
 
-# Create outputs directory
+# Copy other necessary files
+COPY .env* ./
+COPY templates/ ./templates/
+
+# Create necessary directories
 RUN mkdir -p outputs
 RUN mkdir -p templates
+RUN mkdir -p generated_images
+RUN mkdir -p minimaxi_videos
+RUN mkdir -p videos
 
 # Set proper permissions
 RUN chmod -R 755 /app
 
+# Add src directory to Python path
+ENV PYTHONPATH=/app:$PYTHONPATH
+
 # Expose port for FastAPI
 EXPOSE 8000
 
-# Command to run the application
-CMD ["uvicorn", "api_service:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Command to run the application - adjust the path to main file
+CMD ["uvicorn", "src.api_service:app", "--host", "0.0.0.0", "--port", "8000"] 
