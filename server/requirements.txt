@@ -4,7 +4,7 @@ python-dotenv==1.0.0
 pydantic==2.3.0
 langchain-openai==0.0.2
 langchain==0.0.292
-langchain-community==0.0.13
+langchain-community==0.3.20
 requests==2.31.0
 python-multipart==0.0.6
 pillow==10.0.0
