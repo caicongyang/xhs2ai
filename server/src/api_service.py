@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Query, File, UploadFile, Form, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, Field
@@ -6,6 +6,9 @@ from typing import Optional, List, Dict, Any, Union
 import os
 import uuid
 import shutil
+import base64
+import io
+import re
 from enum import Enum
 import logging
 import json
@@ -21,6 +24,7 @@ from .cover_generator import CoverGenerator, CoverStyle
 from .url_content_rewriter import UrlContentRewriter
 from .title_rewriter import TitleRewriter
 from .content_style_rewriter import ContentStyleRewriter
+from .magazine_card_generator import get_magazine_card_generator, MagazineCardRequest, MagazineStyle, MagazineCardResponse
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -152,6 +156,16 @@ class ContentStyleRewriteRequest(BaseModel):
 class UrlContentRewriteRequest(BaseModel):
     url: str = Field(description="需要重写的文章URL")
 
+class MagazineCardBase64Request(BaseModel):
+    content: str
+    style: Optional[str] = None
+    qr_code_url: Optional[str] = None
+    product_image_url: Optional[str] = None
+    product_price: Optional[str] = None
+    product_description: Optional[str] = None
+    qr_code_base64: Optional[str] = None
+    product_image_base64: Optional[str] = None
+
 # 实例化各个生成器
 minimaxi_image_generator = MiniMaxiImageGenerator()
 minimaxi_video_generator = MiniMaxiVideoGenerator()
@@ -161,6 +175,7 @@ cover_generator = CoverGenerator()
 url_content_rewriter = UrlContentRewriter()
 title_rewriter = TitleRewriter()
 content_style_rewriter = ContentStyleRewriter()
+magazine_card_generator = get_magazine_card_generator()
 
 # 辅助函数
 def generate_task_id():
@@ -561,6 +576,47 @@ async def generate_xiaohongshu_cover(request: XiaohongshuCoverRequest, backgroun
     background_tasks.add_task(process_task)
     return {"task_id": task_id}
 
+# 修改杂志卡片生成接口支持文件上传
+@app.post("/api/magazine-cards/generate", response_model=Dict[str, str])
+async def generate_magazine_card(
+    request: MagazineCardRequest,
+    background_tasks: BackgroundTasks
+):
+    """生成杂志风格卡片"""
+    task_id = generate_task_id()
+    store_task(task_id)
+    
+    def process_task():
+        try:
+            update_task_status(task_id, TaskStatus.PROCESSING)
+            
+            generator = get_magazine_card_generator()
+            response = generator.generate_card(request)
+            
+            # 日志记录文件路径
+            logger.info(f"杂志卡片生成完成: {response.file_path}")
+            
+            update_task_status(
+                task_id, 
+                TaskStatus.COMPLETED, 
+                result={
+                    "card_id": response.card_id,
+                    "style": response.style,
+                    "html_path": response.file_path
+                }
+            )
+        except Exception as e:
+            logger.error(f"生成杂志卡片失败: {str(e)}")
+            update_task_status(task_id, TaskStatus.FAILED, error=str(e))
+    
+    background_tasks.add_task(process_task)
+    return {"task_id": task_id}
+
+@app.get("/api/magazine-cards/styles", response_model=List[Dict[str, str]])
+def list_magazine_styles():
+    """列出所有可用的杂志卡片风格"""
+    return magazine_card_generator.list_styles()
+
 # url内容重写API
 @app.post("/api/rewrite/url", response_model=Dict[str, Any])
 def rewrite_url_content(request: UrlContentRewriteRequest):
@@ -632,9 +688,36 @@ def get_task_status(task_id: str):
 @app.get("/api/files/{file_path:path}")
 def get_file(file_path: str):
     """获取生成的文件内容"""
+    # 检查文件是否存在，先直接检查原始路径
     if os.path.exists(file_path) and os.path.isfile(file_path):
+        logger.info(f"文件找到(原始路径): {file_path}")
         return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="File not found")
+    
+    # 尝试检查相对于当前工作目录的路径
+    current_dir = os.getcwd()
+    absolute_path = os.path.join(current_dir, file_path)
+    if os.path.exists(absolute_path) and os.path.isfile(absolute_path):
+        logger.info(f"文件找到(绝对路径): {absolute_path}")
+        return FileResponse(absolute_path)
+    
+    # 尝试去除可能的前导斜杠
+    cleaned_path = file_path.lstrip('/')
+    if os.path.exists(cleaned_path) and os.path.isfile(cleaned_path):
+        logger.info(f"文件找到(清理路径): {cleaned_path}")
+        return FileResponse(cleaned_path)
+    
+    # 尝试outputs目录下的路径
+    outputs_path = os.path.join("outputs", cleaned_path)
+    if os.path.exists(outputs_path) and os.path.isfile(outputs_path):
+        logger.info(f"文件找到(outputs路径): {outputs_path}")
+        return FileResponse(outputs_path)
+    
+    # 输出调试信息
+    logger.error(f"文件未找到: 原始路径={file_path}")
+    logger.error(f"尝试路径: 绝对路径={absolute_path}, 清理路径={cleaned_path}, outputs路径={outputs_path}")
+    logger.info(f"当前工作目录: {current_dir}")
+    
+    raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
 
 # 列出所有可用的封面风格
 @app.get("/api/covers/styles", response_model=Dict[str, List[Dict[str, str]]])

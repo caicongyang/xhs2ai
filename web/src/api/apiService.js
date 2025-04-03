@@ -40,6 +40,10 @@ const checkTaskStatus = async (taskId) => {
 
 // 获取生成的文件
 const getFile = (filePath) => {
+  // 检查路径是否已经以/api/files/开头
+  if (filePath.startsWith('/api/files/')) {
+    return `${API_BASE_URL}${filePath}`;
+  }
   return `${API_BASE_URL}/api/files/${filePath}`;
 };
 
@@ -170,6 +174,23 @@ const historyApi = {
   },
 };
 
+// 杂志卡片生成相关API
+const magazineCardApi = {
+  // 获取杂志卡片风格选项
+  getMagazineStyles: async () => {
+    return await apiRequest('/api/magazine-cards/styles');
+  },
+  
+  // 生成杂志卡片
+  generateMagazineCard: async (params) => {
+    const response = await apiRequest('/api/magazine-cards/generate', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+    return response;
+  }
+};
+
 // 导出API服务
 const apiService = {
   checkTaskStatus,
@@ -180,6 +201,7 @@ const apiService = {
   video: videoApi,
   cover: coverApi,
   history: historyApi,
+  magazineCard: magazineCardApi,
 };
 
 export default apiService; 

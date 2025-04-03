@@ -30,8 +30,9 @@ export function Navigation() {
             <a href="/title-generator" className="text-sm font-medium hover:text-primary">标题生成</a>
             <a href="/content-rewriter" className="text-sm font-medium hover:text-primary">内容改写</a>
             <a href="/cover-generator" className="text-sm font-medium hover:text-primary">封面设计</a>
+            <a href="/magazine-card-generator" className="text-sm font-medium hover:text-primary">杂志卡片</a>
             <a href="/image-generator" className="text-sm font-medium hover:text-primary">图片生成</a>
-            <a href="/video-generator" className="text-sm font-medium hover:text-primary">视频生成</a>
+            <a href="/video-generator" className="text-sm font-medium hover:text-primary">视频生成</a>  
             <a href="/history" className="text-sm font-medium hover:text-primary">历史记录</a>
           </nav>
         </div>

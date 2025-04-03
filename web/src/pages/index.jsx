@@ -51,6 +51,44 @@ export default function HomePage() {
               <p className="text-gray-600 dark:text-gray-300">Transform text into engaging video content that captivates your audience.</p>
             </div>
           </div>
+          
+          <div className="grid md:grid-cols-3 gap-12 mt-12">
+            <div className="text-center p-6 rounded-xl">
+              <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900 flex items-center justify-center rounded-full mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600 dark:text-amber-400">
+                  <rect width="18" height="18" x="3" y="3" rx="2" />
+                  <path d="M3 9h18" />
+                  <path d="M9 21V9" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Cover Designer</h3>
+              <p className="text-gray-600 dark:text-gray-300">Create beautiful cover images for your articles and social media posts.</p>
+            </div>
+            <div className="text-center p-6 rounded-xl">
+              <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900 flex items-center justify-center rounded-full mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose-600 dark:text-rose-400">
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="8" y1="13" x2="16" y2="13" />
+                  <line x1="8" y1="17" x2="16" y2="17" />
+                  <line x1="8" y1="9" x2="10" y2="9" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Magazine Card Generator</h3>
+              <p className="text-gray-600 dark:text-gray-300">Create stunning magazine-style cards with 29 different artistic styles for your content.</p>
+            </div>
+            <div className="text-center p-6 rounded-xl">
+              <div className="w-16 h-16 bg-cyan-100 dark:bg-cyan-900 flex items-center justify-center rounded-full mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-600 dark:text-cyan-400">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="M20.4 14.5 16 10 4 20" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Image Generator</h3>
+              <p className="text-gray-600 dark:text-gray-300">Create custom images with AI for any project, from marketing to social media.</p>
+            </div>
+          </div>
         </div>
       </section>
 
