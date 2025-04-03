@@ -712,9 +712,22 @@ def get_file(file_path: str):
         logger.info(f"文件找到(outputs路径): {outputs_path}")
         return FileResponse(outputs_path)
     
+    # 尝试magazine_cards目录
+    magazine_cards_path = os.path.join("magazine_cards", os.path.basename(cleaned_path))
+    if os.path.exists(magazine_cards_path) and os.path.isfile(magazine_cards_path):
+        logger.info(f"文件找到(magazine_cards路径): {magazine_cards_path}")
+        return FileResponse(magazine_cards_path)
+    
+    # 尝试templates目录
+    templates_path = os.path.join("templates", os.path.basename(cleaned_path))
+    if os.path.exists(templates_path) and os.path.isfile(templates_path):
+        logger.info(f"文件找到(templates路径): {templates_path}")
+        return FileResponse(templates_path)
+    
     # 输出调试信息
     logger.error(f"文件未找到: 原始路径={file_path}")
     logger.error(f"尝试路径: 绝对路径={absolute_path}, 清理路径={cleaned_path}, outputs路径={outputs_path}")
+    logger.error(f"尝试路径: magazine_cards路径={magazine_cards_path}, templates路径={templates_path}")
     logger.info(f"当前工作目录: {current_dir}")
     
     raise HTTPException(status_code=404, detail=f"File not found: {file_path}")

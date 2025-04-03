@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Vie en Bleuet</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #f8f4e8;
+            --ink: #3a3226;
+            --accent: #8b2e2e;
+            --border: #d4c9b1;
+        }
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--paper);
+            color: var(--ink);
+            padding: 20px;
+        }
+        .magazine-card {
+            width: 440px;
+            background-color: var(--paper);
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L100 0 L100 100 L0 100 Z" fill="none" stroke="%23d4c9b1" stroke-width="0.5" stroke-dasharray="2,2"/></svg>');
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .header {
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .header::before, .header::after {
+            content: "❖";
+            position: absolute;
+            bottom: -8px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+        .header::before { left: 20px; }
+        .header::after { right: 20px; }
+        .date {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: var(--accent);
+            text-align: right;
+            margin-bottom: 5px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0;
+            letter-spacing: 1px;
+            position: relative;
+        }
+        .title::before, .title::after {
+            content: "✽";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 16px;
+        }
+        .title::before { left: 30px; }
+        .title::after { right: 30px; }
+        .subtitle {
+            font-size: 14px;
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
+        .quote {
+            border-left: 3px solid var(--accent);
+            padding-left: 15px;
+            margin: 25px 0;
+            font-style: italic;
+            position: relative;
+        }
+        .quote::before {
+            content: "“";
+            position: absolute;
+            top: -15px;
+            left: -10px;
+            font-size: 40px;
+            color: var(--accent);
+            opacity: 0.3;
+        }
+        .quote::after {
+            content: "”";
+            position: absolute;
+            bottom: -30px;
+            right: 10px;
+            font-size: 40px;
+            color: var(--accent);
+            opacity: 0.3;
+        }
+        .features {
+            margin: 25px 0;
+            padding-left: 20px;
+        }
+        .features li {
+            position: relative;
+            margin-bottom: 10px;
+            list-style-type: none;
+        }
+        .features li::before {
+            content: "•";
+            position: absolute;
+            left: -15px;
+            color: var(--accent);
+        }
+        .product {
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+        .product-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            filter: sepia(0.2) brightness(0.95) contrast(1.1);
+            border: 1px solid var(--border);
+        }
+        .product-info {
+            margin-top: 10px;
+        }
+        .product-price {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 18px;
+        }
+        .product-desc {
+            font-size: 13px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .editor-note {
+            background-color: rgba(139, 46, 46, 0.05);
+            border-left: 2px solid var(--accent);
+            padding: 12px;
+            margin: 25px 0;
+            font-size: 13px;
+        }
+        .editor-note::before {
+            content: "Note de la Rédaction";
+            display: block;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+        .qrcode {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .qrcode img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--border);
+            padding: 5px;
+        }
+        .footer {
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+            padding-top: 10px;
+            font-size: 11px;
+            text-align: center;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-card mx-auto p-8">
+        <div class="header">
+            <div class="date">Le 15 Juillet 2023</div>
+            <h1 class="title">1233蓝莓</h1>
+            <div class="subtitle">夏日的甜蜜暴击</div>
+        </div>
+
+        <div class="quote">
+            甜如初恋，花香暗涌<br>
+            18mm+超大果径，颗颗饱满如蓝宝石
+        </div>
+
+        <div class="features">
+            <li>产地直采·-18℃锁鲜</li>
+            <li>冷链凌晨出发，清晨抵达你的舌尖</li>
+            <li>咬破薄皮的瞬间——汁水炸裂的甜</li>
+            <li>尾调是若有若无的山茶花香</li>
+        </div>
+
+        <div class="product">
+            <img src="blob:http://10.210.13.25:8081/95a4a6e8-7876-4c83-88de-5ab5ded64361" alt="1233蓝莓" class="product-image">
+            <div class="product-info">
+                <div class="product-price">¥128/盒</div>
+                <div class="product-desc">Premium Blueberries from 1233 Farm</div>
+            </div>
+        </div>
+
+        <div class="editor-note">
+            早餐酸奶杯的C位 · 办公室抗氧能量弹 · 深夜追剧的治愈小星球
+        </div>
+
+        <div class="qrcode">
+            <img src="blob:http://10.210.13.25:8081/dc6fa9db-1318-4448-b19e-da2c1234c27e" alt="QR Code">
+            <div>Scan for more</div>
+        </div>
+
+        <div class="footer">
+            La Vie en Bleuet · Édition Limitée
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前日期
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.querySelector('.date').textContent = now.toLocaleDateString('fr-FR', options);
+            
+            // 悬停效果
+            const card = document.querySelector('.magazine-card');
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            });
+        });
+    </script>
+</body>
+</html>
