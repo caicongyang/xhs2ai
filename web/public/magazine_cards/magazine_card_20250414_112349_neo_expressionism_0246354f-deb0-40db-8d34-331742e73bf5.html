@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1233蓝莓·夏日的甜蜜暴击</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF3366;
+            --secondary: #33CCFF;
+            --accent: #FFCC33;
+            --dark: #1A1A1A;
+            --light: #F8F8F8;
+            --texture: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="black" stroke-width="2" stroke-dasharray="5,5"/></svg>');
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            width: 440px;
+            margin: 0 auto;
+            padding: 20px;
+            background-image: var(--texture);
+            background-blend-mode: multiply;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 3px solid var(--dark);
+        }
+        
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 65%, var(--primary) 65%, var(--primary) 70%, transparent 70%), 
+                        linear-gradient(-45deg, transparent 65%, var(--secondary) 65%, var(--secondary) 70%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .date {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 2px dashed var(--accent);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+        
+        .title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            line-height: 1.2;
+            text-shadow: 3px 3px 0 var(--accent);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--secondary);
+            transform: skewX(-15deg);
+        }
+        
+        .subtitle {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 25px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .quote {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            color: var(--secondary);
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 5px solid var(--primary);
+            background: rgba(255,255,255,0.7);
+            position: relative;
+            font-style: italic;
+        }
+        
+        .quote::before, .quote::after {
+            content: '"';
+            font-size: 40px;
+            color: var(--primary);
+            position: absolute;
+            opacity: 0.5;
+        }
+        
+        .quote::before {
+            top: 0;
+            left: 10px;
+        }
+        
+        .quote::after {
+            bottom: -20px;
+            right: 10px;
+        }
+        
+        .points {
+            margin: 30px 0;
+        }
+        
+        .point {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .point::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 30px;
+            line-height: 0;
+        }
+        
+        .product {
+            margin: 40px 0;
+            position: relative;
+            border: 3px solid var(--dark);
+            padding: 20px;
+            background: white;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .product-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .product-desc {
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .product-price {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            margin: 30px auto;
+            display: block;
+            border: 2px dashed var(--primary);
+            padding: 5px;
+        }
+        
+        .note {
+            font-size: 12px;
+            color: var(--dark);
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.7);
+            border-top: 1px dashed var(--primary);
+            position: relative;
+        }
+        
+        .note::before {
+            content: "EDITOR'S NOTE";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 10px;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .splash {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(30px);
+            z-index: -1;
+        }
+        
+        .splash-1 {
+            top: -50px;
+            right: -50px;
+        }
+        
+        .splash-2 {
+            bottom: -50px;
+            left: -50px;
+            background: var(--secondary);
+        }
+        
+        .handwritten {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 300;
+            font-style: italic;
+        }
+        
+        .stamp {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 60px;
+            height: 60px;
+            border: 2px dashed var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(15deg);
+            opacity: 0.8;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash splash-1"></div>
+    <div class="splash splash-2"></div>
+    
+    <div class="card">
+        <div class="stamp">Limited Edition</div>
+        
+        <div class="date" id="current-date"></div>
+        
+        <h1 class="title">🌿 1233蓝莓·夏日的甜蜜暴击 🌸</h1>
+        <h2 class="subtitle">✨ 甜如初恋，花香暗涌</h2>
+        
+        <div class="quote">
+            咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香
+        </div>
+        
+        <div class="points">
+            <div class="point">🍇 18mm+超大果径，颗颗饱满如蓝宝石</div>
+            <div class="point">🌱 产地直采·-18℃锁鲜</div>
+            <div class="point">冷链凌晨出发，清晨抵达你的舌尖</div>
+        </div>
+        
+        <div class="product">
+            <img src="./diameter.jpeg" alt="高效能人士专用计时器" class="product-image">
+            <h3 class="product-title">高效能计时器</h3>
+            <p class="product-desc">高效能人士专用计时器，让您的工作效率提升50%</p>
+            <div class="product-price">¥128</div>
+        </div>
+        
+        <img src="./2341744596363.jpg" alt="扫描二维码" class="qr-code">
+        
+        <div class="note">
+            早餐酸奶杯的C位 | 办公室抗氧能量弹 | 深夜追剧的治愈小星球
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前日期
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+            
+            // 添加微妙的动画效果
+            const card = document.querySelector('.card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // 悬停效果
+            const points = document.querySelectorAll('.point');
+            points.forEach(point => {
+                point.addEventListener('mouseenter', () => {
+                    point.style.transform = 'translateX(10px)';
+                    point.style.transition = 'transform 0.3s ease';
+                });
+                
+                point.addEventListener('mouseleave', () => {
+                    point.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -79,6 +79,11 @@ export default function HistoryPage() {
     });
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -125,7 +130,7 @@ export default function HistoryPage() {
                               Topic: {item.topic}
                             </span>
                             <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {new Date(item.date).toLocaleDateString()}
+                              {formatDate(item.date)}
                             </span>
                           </div>
                         </li>
@@ -158,7 +163,7 @@ export default function HistoryPage() {
                                 {item.tone}
                               </span>
                               <span className="text-sm text-gray-500 dark:text-gray-400">
-                                {new Date(item.date).toLocaleString()}
+                                {formatDate(item.date)}
                               </span>
                             </div>
                             <Button 
@@ -230,7 +235,7 @@ export default function HistoryPage() {
                                 </span>
                               </div>
                               <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {new Date(video.date).toLocaleDateString()}
+                                {formatDate(video.date)}
                               </span>
                             </div>
                           </div>
@@ -287,7 +292,7 @@ export default function HistoryPage() {
                             Topic: {item.topic}
                           </span>
                           <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(item.date).toLocaleDateString()}
+                            {formatDate(item.date)}
                           </span>
                         </div>
                       </li>
@@ -330,7 +335,7 @@ export default function HistoryPage() {
                               {item.tone}
                             </span>
                             <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {new Date(item.date).toLocaleString()}
+                              {formatDate(item.date)}
                             </span>
                           </div>
                           <Button 
@@ -412,7 +417,7 @@ export default function HistoryPage() {
                               </span>
                             </div>
                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {new Date(video.date).toLocaleDateString()}
+                              {formatDate(video.date)}
                             </span>
                           </div>
                         </div>

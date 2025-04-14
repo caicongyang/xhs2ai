@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超现实主义时尚杂志</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #f1c40f;
+            --bg: #f9f9f9;
+            --text: #333;
+            --quote-bg: rgba(255, 255, 255, 0.7);
+        }
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--bg);
+            color: var(--text);
+            width: 440px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .magazine-card {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding: 30px;
+            border-radius: 5px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .date {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: var(--secondary);
+            transform: rotate(-5deg);
+            background: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .title:hover::after {
+            transform: scaleX(1);
+        }
+        .subtitle {
+            font-size: 16px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .quote {
+            background: var(--quote-bg);
+            padding: 20px;
+            border-left: 5px solid var(--accent);
+            margin: 20px 0;
+            font-style: italic;
+            position: relative;
+            transform: rotate(-1deg);
+        }
+        .quote::before {
+            content: '"';
+            font-size: 60px;
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            color: rgba(0,0,0,0.1);
+        }
+        .points {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        .points li {
+            margin-bottom: 10px;
+            position: relative;
+            list-style-type: none;
+        }
+        .points li::before {
+            content: '✦';
+            position: absolute;
+            left: -20px;
+            color: var(--secondary);
+        }
+        .product {
+            display: flex;
+            margin: 30px 0;
+            align-items: center;
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: rotate(1deg);
+        }
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        .product-info {
+            flex: 1;
+        }
+        .product-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .product-price {
+            color: var(--secondary);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .product-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.9;
+            transition: transform 0.3s ease;
+        }
+        .qr-code:hover {
+            transform: scale(1.1);
+        }
+        .editor-note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .surreal-element {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .eye {
+            top: 50px;
+            left: -30px;
+            font-size: 100px;
+            transform: rotate(15deg);
+            color: var(--secondary);
+        }
+        .clock {
+            bottom: 100px;
+            right: -40px;
+            font-size: 80px;
+            transform: rotate(-10deg);
+            color: var(--accent);
+        }
+        .cloud {
+            top: 200px;
+            right: -20px;
+            font-size: 60px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-card">
+        <div class="date" id="current-date"></div>
+        
+        <i class="fas fa-eye surreal-element eye"></i>
+        <i class="fas fa-clock surreal-element clock"></i>
+        <i class="fas fa-cloud surreal-element cloud"></i>
+        
+        <h1 class="title">🌿 「1233蓝莓·夏日的甜蜜暴击」 🌸</h1>
+        <h2 class="subtitle">✨ 甜如初恋，花香暗涌</h2>
+        
+        <div class="quote">
+            "咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香"
+        </div>
+        
+        <ul class="points">
+            <li>🍇 18mm+超大果径，颗颗饱满如蓝宝石</li>
+            <li>🌱 产地直采·-18℃锁鲜</li>
+            <li>冷链凌晨出发，清晨抵达你的舌尖</li>
+            <li>▫早餐酸奶杯的C位</li>
+            <li>▫办公室抗氧能量弹</li>
+            <li>▫深夜追剧的治愈小星球</li>
+        </ul>
+        
+        <div class="product">
+            <img src="./diameter.jpeg" alt="商品图片" class="product-image">
+            <div class="product-info">
+                <div class="product-title">高效能计时器</div>
+                <div class="product-price">¥128</div>
+                <div class="product-desc">高效能人士专用计时器，让您的工作效率提升50%</div>
+            </div>
+        </div>
+        
+        <img src="./2341744596363.jpg" alt="二维码" class="qr-code">
+        
+        <div class="editor-note">
+            <strong>编辑笔记:</strong> 本季蓝莓精选自云南高原，采用真空预冷技术锁鲜，每一颗都经过严格筛选。搭配我们推荐的高效能计时器，让您享受美味的同时提升工作效率。
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+            
+            // 添加微妙的动画效果
+            const card = document.querySelector('.magazine-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // 悬停效果
+            const points = document.querySelectorAll('.points li');
+            points.forEach(point => {
+                point.addEventListener('mouseover', () => {
+                    point.style.transform = 'translateX(5px)';
+                    point.style.transition = 'transform 0.3s ease';
+                });
+                point.addEventListener('mouseout', () => {
+                    point.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

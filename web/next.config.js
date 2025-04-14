@@ -22,9 +22,17 @@ const nextConfig = {
       '/image-generator': { page: '/image-generator' },
       '/video-generator': { page: '/video-generator' },
       '/history': { page: '/history' },
+      '/magazine-card-generator': { page: '/magazine-card-generator' },
     };
   },
   trailingSlash: true,
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.html$/,
+      use: 'raw-loader',
+    });
+    return config;
+  },
 }
 
 module.exports = nextConfig 

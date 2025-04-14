@@ -6,18 +6,193 @@ import { Textarea } from '../components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import { Card, CardContent, CardFooter } from '../components/ui/card';
 import { Label } from '../components/ui/label';
-import { AlertCircle, Copy, Download, ExternalLink, RefreshCw, Save, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Copy, Download, ExternalLink, RefreshCw, Save, CheckCircle2, Check } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import apiService from '../api/apiService';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
+import { cn } from '../lib/utils';
+
+// 风格预览卡片组件
+const StylePreviewCard = ({ style, isSelected, onSelect }) => {
+  return (
+    <div
+      className={cn(
+        "relative cursor-pointer rounded-lg border-2 p-2 transition-all hover:border-primary",
+        isSelected ? "border-primary bg-primary/5" : "border-muted"
+      )}
+      onClick={() => onSelect(style.id)}
+    >
+      <div className="aspect-[4/3] w-full overflow-hidden rounded-md bg-muted relative group">
+        {/* 预览图 */}
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-br from-gray-900/80 to-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+          isSelected && "opacity-100"
+        )} />
+        <div className="absolute inset-0 flex flex-col justify-between p-3 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="text-xs font-medium uppercase tracking-wider">
+            {style.id.replace(/_/g, ' ')}
+          </div>
+          <div className="text-sm">
+            {getStyleDescription(style.id)}
+          </div>
+        </div>
+        {/* 风格示例背景 */}
+        <div className={cn(
+          "w-full h-full",
+          getStylePreviewClass(style.id)
+        )}>
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-lg font-medium text-gray-600">
+              {style.chineseName}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-sm font-medium">{style.chineseName}</p>
+        {isSelected && (
+          <Check className="h-4 w-4 text-primary" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 获取风格描述的简短版本
+const getStyleDescription = (styleId) => {
+  const descriptions = {
+    minimalist: "极简主义设计，强调留白与简约",
+    bold_modern: "大胆现代风格，强烈视觉冲击",
+    elegant_vintage: "优雅复古风格，呈现经典美感",
+    futuristic_tech: "未来科技风格，展现高科技感",
+    scandinavian: "北欧简约风格，温暖而实用",
+    art_deco: "装饰艺术风格，华丽与几何结合",
+    japanese_minimalism: "日式极简风格，禅意美学",
+    postmodern_deconstruction: "后现代解构，打破传统规则",
+    punk: "朋克风格，反叛与原始能量",
+    british_rock: "英伦摇滚，经典与叛逆融合",
+    black_metal: "黑金属风格，暗黑与神秘",
+    memphis_design: "孟菲斯设计，前卫与趣味",
+    cyberpunk: "赛博朋克，高科技与街头文化",
+    pop_art: "波普艺术，大胆而直接",
+    deconstructed_swiss: "解构瑞士风格，秩序中的混沌",
+    vaporwave: "蒸汽波风格，复古未来主义",
+    neo_expressionism: "新表现主义，强烈情感表达",
+    extreme_minimalism: "极致极简，追求纯粹",
+    neo_futurism: "新未来主义，流线型设计",
+    surrealist_collage: "超现实拼贴，梦境般的视觉",
+    neo_baroque: "新巴洛克，数字化的奢华",
+    liquid_digital_morphism: "液态数字形态，流动的视觉",
+    hypersensory_minimalism: "超感官极简，微妙的质感",
+    neo_expressionist_data: "表现主义数据，艺术与数据的融合",
+    victorian: "维多利亚风格，古典印刷美学",
+    bauhaus: "包豪斯风格，功能主义设计",
+    constructivism: "构成主义，革命性的视觉",
+    memphis: "孟菲斯风格，前卫与趣味",
+    german_expressionism: "德国表现主义，强烈的情感"
+  };
+  return descriptions[styleId] || "独特的设计风格";
+};
+
+// 获取风格预览的CSS类名
+const getStylePreviewClass = (styleId) => {
+  const styleClasses = {
+    minimalist: "bg-white",
+    bold_modern: "bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500",
+    elegant_vintage: "bg-[#f5e6d3]",
+    futuristic_tech: "bg-gradient-to-r from-blue-900 to-black",
+    scandinavian: "bg-gray-50",
+    art_deco: "bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-700",
+    japanese_minimalism: "bg-gray-100",
+    postmodern_deconstruction: "bg-gradient-to-br from-gray-200 via-gray-400 to-gray-600",
+    punk: "bg-black",
+    british_rock: "bg-gradient-to-r from-red-700 via-blue-900 to-gray-900",
+    black_metal: "bg-gradient-to-br from-gray-900 to-black",
+    memphis_design: "bg-gradient-to-r from-pink-400 via-yellow-400 to-blue-400",
+    cyberpunk: "bg-gradient-to-r from-purple-900 via-blue-900 to-black",
+    pop_art: "bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500",
+    deconstructed_swiss: "bg-white",
+    vaporwave: "bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300",
+    neo_expressionism: "bg-gradient-to-br from-red-700 via-yellow-600 to-blue-700",
+    extreme_minimalism: "bg-white",
+    neo_futurism: "bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900",
+    surrealist_collage: "bg-gradient-to-br from-purple-700 via-blue-700 to-green-700",
+    neo_baroque: "bg-gradient-to-br from-yellow-700 via-red-700 to-purple-900",
+    liquid_digital_morphism: "bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600",
+    hypersensory_minimalism: "bg-gradient-to-br from-gray-50 to-gray-100",
+    neo_expressionist_data: "bg-gradient-to-br from-blue-700 via-red-600 to-yellow-500",
+    victorian: "bg-[#e8d5b7]",
+    bauhaus: "bg-white",
+    constructivism: "bg-gradient-to-br from-red-600 via-gray-900 to-red-900",
+    memphis: "bg-gradient-to-r from-pink-400 via-yellow-400 to-blue-400",
+    german_expressionism: "bg-gradient-to-br from-gray-900 via-red-900 to-black"
+  };
+  return styleClasses[styleId] || "bg-gray-100";
+};
+
+// 风格网格组件
+const StyleGrid = ({ styles, selectedStyle, onStyleSelect }) => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {styles.map((style) => (
+        <StylePreviewCard
+          key={style.id}
+          style={style}
+          isSelected={selectedStyle === style.id}
+          onSelect={onStyleSelect}
+        />
+      ))}
+    </div>
+  );
+};
+
+// 模板预览组件
+const TemplatePreview = ({ style }) => {
+  // 定义模板映射
+  const templateMap = {
+    neo_expressionism: '/magazine_cards/magazine_card_20250414_112349_neo_expressionism_0246354f-deb0-40db-8d34-331742e73bf5.html',
+    black_metal: '/magazine_cards/magazine_card_20250414_111732_black_metal_1847e87a-5055-4af1-8a83-1efecf2924b9.html',
+    surrealist_collage: '/magazine_cards/magazine_card_20250414_112638_surrealist_collage_e33d783b-c3dc-4b27-b3aa-4b2ca1f3775a.html',
+    constructivism: '/magazine_cards/magazine_card_20250414_112102_constructivism_d68162ed-7ab2-49c8-80d0-022779c4fea9.html'
+  };
+
+  const templateUrl = templateMap[style];
+  if (!templateUrl) return null;
+
+  return (
+    <Card className="mt-4">
+      <CardContent className="pt-6">
+        <h3 className="font-medium mb-4">风格预览</h3>
+        <div className="border rounded-lg overflow-hidden">
+          <div className="aspect-[3/4] relative">
+            <iframe
+              src={templateUrl}
+              className="w-full h-full border-0"
+              title={`${style} 风格预览`}
+            />
+          </div>
+          <div className="p-4 bg-white">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => window.open(templateUrl, '_blank')}
+            >
+              <ExternalLink className="mr-1 h-4 w-4" />
+              查看完整模板
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function MagazineCardGeneratorPage() {
   // 状态管理
   const [content, setContent] = useState('');
   const [style, setStyle] = useState('');
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
-  const [productImageUrl, setProductImageUrl] = useState('');
   const [productPrice, setProductPrice] = useState('');
   const [productDescription, setProductDescription] = useState('');
   const [availableStyles, setAvailableStyles] = useState([]);
@@ -220,12 +395,40 @@ export default function MagazineCardGeneratorPage() {
       
       // 添加可选参数（如果提供）
       if (showAdvancedOptions) {
-        // 使用图片URL（优先使用预览URL，因为它代表本地选择的文件）
-        if (qrCodeFilePreview) cardRequest.qr_code_url = qrCodeFilePreview;
-        else if (qrCodeUrl) cardRequest.qr_code_url = qrCodeUrl;
-        
-        if (productImageFilePreview) cardRequest.product_image_url = productImageFilePreview;
-        else if (productImageUrl) cardRequest.product_image_url = productImageUrl;
+        // 如果使用了文件上传，需要先上传文件到服务器
+        if (qrCodeFile || productImageFile) {
+          const formData = new FormData();
+          if (qrCodeFile) formData.append('qr_code', qrCodeFile);
+          if (productImageFile) formData.append('product_image', productImageFile);
+          
+          try {
+            const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/upload`, {
+              method: 'POST',
+              body: formData,
+              // 移除 Content-Type header，让浏览器自动设置
+            });
+            
+            if (!uploadResponse.ok) {
+              const errorData = await uploadResponse.json();
+              throw new Error(errorData.detail || '文件上传失败');
+            }
+            
+            const uploadResult = await uploadResponse.json();
+            console.log('文件上传结果:', uploadResult);
+            
+            if (qrCodeFile && uploadResult.qr_code_url) {
+              cardRequest.qr_code_url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${uploadResult.qr_code_url}`;
+            }
+            if (productImageFile && uploadResult.product_image_url) {
+              cardRequest.product_image_url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${uploadResult.product_image_url}`;
+            }
+          } catch (error) {
+            console.error('文件上传失败:', error);
+            setErrorMessage(`文件上传失败: ${error.message}`);
+            setIsGenerating(false);
+            return;
+          }
+        }
         
         if (productPrice) cardRequest.product_price = productPrice;
         if (productDescription) cardRequest.product_description = productDescription;
@@ -310,10 +513,10 @@ export default function MagazineCardGeneratorPage() {
     }
   };
   
-  // 获取风格名称
-  const getStyleName = (styleId) => {
-    const style = availableStyles.find(s => s.id === styleId);
-    return style ? style.chineseName : styleId;
+  // 获取当前选中风格的中文名称
+  const getSelectedStyleName = () => {
+    const selectedStyle = availableStyles.find(s => s.id === style);
+    return selectedStyle ? selectedStyle.chineseName : '选择卡片风格';
   };
 
   // 处理二维码文件上传
@@ -322,13 +525,9 @@ export default function MagazineCardGeneratorPage() {
     if (!file) return;
     
     setQrCodeFile(file);
-    
     // 创建预览URL
     const previewUrl = URL.createObjectURL(file);
     setQrCodeFilePreview(previewUrl);
-    
-    // 清除URL输入
-    setQrCodeUrl('');
   };
   
   // 处理产品图片文件上传
@@ -337,13 +536,9 @@ export default function MagazineCardGeneratorPage() {
     if (!file) return;
     
     setProductImageFile(file);
-    
     // 创建预览URL
     const previewUrl = URL.createObjectURL(file);
     setProductImageFilePreview(previewUrl);
-    
-    // 清除URL输入
-    setProductImageUrl('');
   };
   
   // 清除二维码文件
@@ -400,24 +595,36 @@ export default function MagazineCardGeneratorPage() {
                     />
                   </div>
                   
-                  {/* 风格选择 */}
+                  {/* 风格选择 - 改为下拉框 */}
                   <div className="space-y-2">
-                    <Label htmlFor="style">卡片风格</Label>
-                    <Select value={style} onValueChange={setStyle}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="选择风格">
-                          {style && availableStyles.find(s => s.id === style)?.chineseName}
+                    <Label>卡片风格</Label>
+                    <Select 
+                      value={style} 
+                      onValueChange={(value) => {
+                        console.log('Selected style:', value);
+                        setStyle(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue>
+                          {getSelectedStyleName()}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        {availableStyles.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>
-                            {s.chineseName}
+                        {availableStyles.map((styleOption) => (
+                          <SelectItem 
+                            key={styleOption.id} 
+                            value={styleOption.id}
+                          >
+                            {styleOption.chineseName}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* 风格预览 */}
+                  <TemplatePreview style={style} />
                   
                   {/* 高级选项开关 */}
                   <div className="flex items-center space-x-2">
@@ -438,122 +645,74 @@ export default function MagazineCardGeneratorPage() {
                       <div className="space-y-2">
                         <Label htmlFor="qr-code-input">二维码图片</Label>
                         
-                        {/* 上传/URL切换标签 */}
-                        <Tabs defaultValue="url" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="url">URL输入</TabsTrigger>
-                            <TabsTrigger value="upload">上传文件</TabsTrigger>
-                          </TabsList>
-                          
-                          <TabsContent value="url" className="pt-2">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
                             <Input
-                              id="qr-code-url"
-                              value={qrCodeUrl}
-                              onChange={(e) => {
-                                setQrCodeUrl(e.target.value);
-                                clearQrCodeFile(); // 清除已上传的文件
-                              }}
-                              placeholder="例如: https://example.com/qrcode.png"
-                              disabled={!!qrCodeFile}
+                              id="qr-code-file"
+                              type="file"
+                              onChange={handleQrCodeFileChange}
+                              accept="image/*"
+                              className="flex-1"
                             />
-                          </TabsContent>
+                            {qrCodeFile && (
+                              <Button 
+                                variant="outline" 
+                                size="icon" 
+                                onClick={clearQrCodeFile}
+                                type="button"
+                              >
+                                <AlertCircle className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                           
-                          <TabsContent value="upload" className="pt-2">
-                            <div className="flex flex-col gap-2">
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  id="qr-code-file"
-                                  type="file"
-                                  onChange={handleQrCodeFileChange}
-                                  accept="image/*"
-                                  className="flex-1"
-                                  disabled={!!qrCodeUrl}
-                                />
-                                {qrCodeFile && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="icon" 
-                                    onClick={clearQrCodeFile}
-                                    type="button"
-                                  >
-                                    <AlertCircle className="h-4 w-4" />
-                                  </Button>
-                                )}
-                              </div>
-                              
-                              {qrCodeFilePreview && (
-                                <div className="mt-2 relative w-24 h-24 border rounded-md overflow-hidden">
-                                  <img 
-                                    src={qrCodeFilePreview} 
-                                    alt="二维码预览" 
-                                    className="object-contain w-full h-full"
-                                  />
-                                </div>
-                              )}
+                          {qrCodeFilePreview && (
+                            <div className="mt-2 relative w-24 h-24 border rounded-md overflow-hidden">
+                              <img 
+                                src={qrCodeFilePreview} 
+                                alt="二维码预览" 
+                                className="object-contain w-full h-full"
+                              />
                             </div>
-                          </TabsContent>
-                        </Tabs>
+                          )}
+                        </div>
                       </div>
                       
                       {/* 产品图片输入 */}
                       <div className="space-y-2">
                         <Label htmlFor="product-image-input">产品图片</Label>
                         
-                        {/* 上传/URL切换标签 */}
-                        <Tabs defaultValue="url" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="url">URL输入</TabsTrigger>
-                            <TabsTrigger value="upload">上传文件</TabsTrigger>
-                          </TabsList>
-                          
-                          <TabsContent value="url" className="pt-2">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
                             <Input
-                              id="product-image-url"
-                              value={productImageUrl}
-                              onChange={(e) => {
-                                setProductImageUrl(e.target.value);
-                                clearProductImageFile(); // 清除已上传的文件
-                              }}
-                              placeholder="例如: https://example.com/product.jpg"
-                              disabled={!!productImageFile}
+                              id="product-image-file"
+                              type="file"
+                              onChange={handleProductImageFileChange}
+                              accept="image/*"
+                              className="flex-1"
                             />
-                          </TabsContent>
+                            {productImageFile && (
+                              <Button 
+                                variant="outline" 
+                                size="icon" 
+                                onClick={clearProductImageFile}
+                                type="button"
+                              >
+                                <AlertCircle className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                           
-                          <TabsContent value="upload" className="pt-2">
-                            <div className="flex flex-col gap-2">
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  id="product-image-file"
-                                  type="file"
-                                  onChange={handleProductImageFileChange}
-                                  accept="image/*"
-                                  className="flex-1"
-                                  disabled={!!productImageUrl}
-                                />
-                                {productImageFile && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="icon" 
-                                    onClick={clearProductImageFile}
-                                    type="button"
-                                  >
-                                    <AlertCircle className="h-4 w-4" />
-                                  </Button>
-                                )}
-                              </div>
-                              
-                              {productImageFilePreview && (
-                                <div className="mt-2 relative w-24 h-24 border rounded-md overflow-hidden">
-                                  <img 
-                                    src={productImageFilePreview} 
-                                    alt="产品图片预览" 
-                                    className="object-contain w-full h-full"
-                                  />
-                                </div>
-                              )}
+                          {productImageFilePreview && (
+                            <div className="mt-2 relative w-24 h-24 border rounded-md overflow-hidden">
+                              <img 
+                                src={productImageFilePreview} 
+                                alt="产品图片预览" 
+                                className="object-contain w-full h-full"
+                              />
                             </div>
-                          </TabsContent>
-                        </Tabs>
+                          )}
+                        </div>
                       </div>
                       
                       {/* 产品价格 */}
@@ -612,7 +771,7 @@ export default function MagazineCardGeneratorPage() {
                     <p>任务ID: {taskId}</p>
                     <p>状态: {taskStatus === 'completed' ? '完成' : taskStatus === 'failed' ? '失败' : '处理中...'}</p>
                     {generatedCard && (
-                      <p>风格: {getStyleName(generatedCard.style)}</p>
+                      <p>风格: {getSelectedStyleName()}</p>
                     )}
                   </div>
                 </CardContent>
@@ -682,12 +841,12 @@ export default function MagazineCardGeneratorPage() {
                 </div>
                 
                 {/* 预览框 */}
-                <div className="border rounded-md overflow-hidden bg-gray-50 min-h-[500px] flex items-center justify-center">
+                <div className="border rounded-md overflow-hidden bg-gray-50 min-h-[800px] flex items-center justify-center">
                   {previewHtml ? (
                     <iframe
                       ref={previewIframeRef}
                       src={previewHtml}
-                      className="w-full h-[500px] border-0"
+                      className="w-full h-[800px] border-0"
                       onLoad={handleIframeLoad}
                     />
                   ) : (

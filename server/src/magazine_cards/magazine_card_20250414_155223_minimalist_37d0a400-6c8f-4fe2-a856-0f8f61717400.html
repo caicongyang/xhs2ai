@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时尚知识卡片</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #888888;
+            --accent-color: #f5f5f5;
+            --spacing-unit: 16px;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--primary-color);
+            background-color: white;
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+        }
+        .container {
+            width: 440px;
+            padding: calc(var(--spacing-unit) * 2);
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .date {
+            font-size: 12px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+            letter-spacing: 0.1em;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit) * 0.5);
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-weight: 300;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: calc(var(--spacing-unit) * 2) 0;
+        }
+        .quote {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.8;
+            padding: calc(var(--spacing-unit) * 1.5) 0;
+            margin: calc(var(--spacing-unit) * 2) 0;
+            position: relative;
+        }
+        .quote:before, .quote:after {
+            content: '"';
+            font-size: 24px;
+            color: var(--secondary-color);
+            opacity: 0.3;
+        }
+        .list-item {
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+            position: relative;
+            padding-left: calc(var(--spacing-unit) * 1.5);
+        }
+        .list-item:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            margin: calc(var(--spacing-unit) * 2) 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .product-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit) * 0.5);
+        }
+        .product-price {
+            font-size: 16px;
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+        }
+        .product-desc {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            line-height: 1.8;
+        }
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            margin: calc(var(--spacing-unit) * 2) 0;
+        }
+        .editor-note {
+            font-size: 12px;
+            color: var(--secondary-color);
+            border-top: 1px solid #f0f0f0;
+            padding-top: calc(var(--spacing-unit) * 1.5);
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+        .hover-effect {
+            transition: all 0.3s ease;
+        }
+        .hover-effect:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date">14 AVRIL 2024</div>
+        <h1 class="title">夏日味觉诗篇</h1>
+        <p class="subtitle">季节限定的味觉艺术</p>
+        
+        <div class="divider"></div>
+        
+        <div class="quote">
+            咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="list-item">甜如初恋，花香暗涌</div>
+        <div class="list-item">18mm+超大果径，颗颗饱满如蓝宝石</div>
+        <div class="list-item">产地直采·-18℃锁鲜</div>
+        <div class="list-item">冷链凌晨出发，清晨抵达你的舌尖</div>
+        
+        <img src="http://localhost:8000/uploads/20250414/product_47a6204c-2e6a-4e1d-b693-ef1c96461ba1.jpeg" alt="1233蓝莓" class="product-image hover-effect">
+        
+        <div class="product-title">1233蓝莓·夏日的甜蜜暴击</div>
+        <div class="product-price">¥129</div>
+        <div class="product-desc">
+            ▫早餐酸奶杯的C位<br>
+            ▫办公室抗氧能量弹<br>
+            ▫深夜追剧的治愈小星球
+        </div>
+        
+        <img src="http://localhost:8000/uploads/20250414/qr_ac75691f-2f2c-4598-ae71-4f67da076126.png" alt="二维码" class="qr-code hover-effect">
+        
+        <div class="editor-note">
+            Editor's Note: 本季限定，数量有限。建议冷藏保存以保持最佳口感。
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 微妙的悬停效果
+            const hoverElements = document.querySelectorAll('.hover-effect');
+            hoverElements.forEach(el => {
+                el.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                el.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
