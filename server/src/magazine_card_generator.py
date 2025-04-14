@@ -11,6 +11,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from datetime import datetime
 from dotenv import load_dotenv
+import shutil
 
 # 加载环境变量
 load_dotenv()
@@ -216,13 +217,17 @@ class MagazineCardGenerator:
 * 确保代码简洁高效，注重性能和可维护性
 * 使用CSS变量管理颜色和间距，便于风格统一
 
+**图片处理规范:**
+* 商品图片路径: {product_image_url}
+* 二维码图片路径: {qr_code_url}
+* 图片路径必须直接使用提供的路径，不要修改或使用blob URL
+* 如果图片路径为空，可以使用占位图片或隐藏相应的图片元素
+
 **输出要求:**
 * 提供完整的HTML代码，包含所有CSS和JavaScript
 * 设计的宽度为440px，高度不要超过1280px
 * 对主题内容进行抽象提炼，只显示列点或最核心句引用
 * 永远用中文输出，装饰元素可用法语、英语等其他语言显得有逼格
-* 二维码使用以下地址（如提供）：{qr_code_url}
-* 商品图片使用以下地址（如提供）：{product_image_url}
 * 商品价格：{product_price}
 * 商品描述：{product_description}
 
@@ -269,18 +274,51 @@ class MagazineCardGenerator:
             "采用现代杂志风格设计，融合优雅与时尚元素。"
         )
         
-        # 处理上传的文件
+        # 获取当前脚本所在目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # 创建输出目录（使用绝对路径）
+        output_dir = os.path.join(current_dir, self.output_dir)
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # 处理图片文件路径
         qr_code_url = request.qr_code_url
         product_image_url = request.product_image_url
         
-        # 如果有上传文件，优先使用文件路径
+        # 如果有本地文件，使用相对路径
         if request.qr_code_file:
-            qr_code_url = f"/api/files/{request.qr_code_file}"
-            logger.info(f"使用上传的二维码文件: {request.qr_code_file}")
+            # 将文件复制到输出目录
+            qr_code_filename = os.path.basename(request.qr_code_file)
+            qr_code_dest = os.path.join(output_dir, qr_code_filename)
+            try:
+                # 确保目标目录存在并有正确的权限
+                os.makedirs(os.path.dirname(qr_code_dest), exist_ok=True)
+                # 如果目标文件已存在，先删除
+                if os.path.exists(qr_code_dest):
+                    os.remove(qr_code_dest)
+                shutil.copy2(request.qr_code_file, qr_code_dest)
+                qr_code_url = f"/magazine_cards/{qr_code_filename}"
+                logger.info(f"二维码文件已复制到: {qr_code_dest}")
+            except Exception as e:
+                logger.error(f"复制二维码文件失败: {str(e)}")
+                qr_code_url = request.qr_code_file
             
         if request.product_image_file:
-            product_image_url = f"/api/files/{request.product_image_file}"
-            logger.info(f"使用上传的产品图片: {request.product_image_file}")
+            # 将文件复制到输出目录
+            product_image_filename = os.path.basename(request.product_image_file)
+            product_image_dest = os.path.join(output_dir, product_image_filename)
+            try:
+                # 确保目标目录存在并有正确的权限
+                os.makedirs(os.path.dirname(product_image_dest), exist_ok=True)
+                # 如果目标文件已存在，先删除
+                if os.path.exists(product_image_dest):
+                    os.remove(product_image_dest)
+                shutil.copy2(request.product_image_file, product_image_dest)
+                product_image_url = f"/magazine_cards/{product_image_filename}"
+                logger.info(f"产品图片已复制到: {product_image_dest}")
+            except Exception as e:
+                logger.error(f"复制产品图片失败: {str(e)}")
+                product_image_url = request.product_image_file
         
         # 准备提示输入
         prompt_inputs = {
@@ -304,13 +342,15 @@ class MagazineCardGenerator:
             # 生成卡片ID
             card_id = str(uuid.uuid4())
             
-            # 创建输出目录结构（如果不存在）
-            os.makedirs(self.output_dir, exist_ok=True)
-            
             # 保存HTML文件，使用时间戳作为文件名的一部分
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"magazine_card_{timestamp}_{style.value}_{card_id}.html"
-            file_path = os.path.join(self.output_dir, filename)
+            file_path = os.path.join(output_dir, filename)
+            
+            # 确保输出目录存在
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            
+            # 写入文件
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
             
@@ -362,29 +402,29 @@ def main():
         # 初始化生成器
         generator = MagazineCardGenerator()
         
+        # 获取当前脚本所在目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # 创建测试用的本地文件目录
+        test_files_dir = os.path.join(current_dir, "test_files")
+        os.makedirs(test_files_dir, exist_ok=True)
+        
+        # 创建测试用的二维码和产品图片文件路径
+        qr_code_file = os.path.join(test_files_dir, "2341744596363.jpg")
+        product_image_file = os.path.join(test_files_dir, "diameter.jpeg")
+        
         # 测试内容
         test_content = """
-        # 如何提高工作效率
-        
-        在当今快节奏的工作环境中，提高效率变得越来越重要。以下是一些实用技巧：
-        
-        ## 核心要点
-        
-        1. 使用番茄工作法管理时间
-        2. 减少多任务处理，专注单一任务
-        3. 定期休息，避免疲劳
-        4. 使用效率工具自动化重复任务
-        5. 建立明确的优先级系统
-        
-        > "效率不是关于做更多事情，而是关于把重要的事情做好。" - 彼得·德鲁克
-        
-        ## 实用工具推荐
-        
-        - Notion：整合笔记、任务和知识库
-        - Forest：专注时间管理的有趣应用
-        - Todoist：简洁高效的任务管理工具
-        
-        记住，良好的工作效率来自于长期养成的习惯，而非一时的努力。
+        🌿 「1233蓝莓·夏日的甜蜜暴击」 🌸
+        ✨ 甜如初恋，花香暗涌
+        🍇 18mm+超大果径，颗颗饱满如蓝宝石
+        🌱 产地直采·-18℃锁鲜
+        冷链凌晨出发，清晨抵达你的舌尖
+        💧咬破薄皮的瞬间——
+        汁水炸裂的甜，尾调是若有若无的山茶花香
+        ▫早餐酸奶杯的C位
+        ▫办公室抗氧能量弹
+        ▫深夜追剧的治愈小星球
         """
         
         # 随机选择一种风格进行测试
@@ -395,12 +435,12 @@ def main():
         request = MagazineCardRequest(
             content=test_content,
             style=style,
-            qr_code_url="https://pic.readnow.pro/2025/03/791e29affc7772652c01be54b92e8c43.jpg",
-            product_image_url="https://images.unsplash.com/photo-1611784728558-6a882d147c80?q=80&w=2574&auto=format&fit=crop",
-            product_price="¥299",
+            qr_code_url=None,  # 不使用URL
+            product_image_url=None,  # 不使用URL
+            product_price="¥128",
             product_description="高效能人士专用计时器，让您的工作效率提升50%",
-            qr_code_file=None,
-            product_image_file=None
+            qr_code_file=qr_code_file,  # 使用本地文件路径
+            product_image_file=product_image_file  # 使用本地文件路径
         )
         
         # 生成卡片
@@ -412,6 +452,8 @@ def main():
         file_path = response.file_path
         print(f"HTML文件保存位置: {file_path}")
         print(f"风格: {response.style.value}")
+        print(f"使用的二维码文件: {qr_code_file}")
+        print(f"使用的产品图片文件: {product_image_file}")
         
         print("测试完成！")
         

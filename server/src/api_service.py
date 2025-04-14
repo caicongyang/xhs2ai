@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Query, File, UploadFile, Form, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any, Union
 import os
@@ -16,15 +17,15 @@ import time
 from datetime import datetime
 
 # 导入各个功能模块
-from .minimaxi_image_generator import MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat
-from .minimaxi_video_generator import MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType
-from .keling_video_generator import VideoGenerator as KlingVideoGenerator
-from .keling_image_generator import ImageGenerator as KlingImageGenerator, ImageStyle as KlingImageStyle, ImageRatio
-from .cover_generator import CoverGenerator, CoverStyle
-from .url_content_rewriter import UrlContentRewriter
-from .title_rewriter import TitleRewriter
-from .content_style_rewriter import ContentStyleRewriter
-from .magazine_card_generator import get_magazine_card_generator, MagazineCardRequest, MagazineStyle, MagazineCardResponse
+from minimaxi_image_generator import MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat
+from minimaxi_video_generator import MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType
+from keling_video_generator import VideoGenerator as KlingVideoGenerator
+from keling_image_generator import ImageGenerator as KlingImageGenerator, ImageStyle as KlingImageStyle, ImageRatio
+from cover_generator import CoverGenerator, CoverStyle
+from url_content_rewriter import UrlContentRewriter
+from title_rewriter import TitleRewriter
+from content_style_rewriter import ContentStyleRewriter
+from magazine_card_generator import get_magazine_card_generator, MagazineCardRequest, MagazineStyle, MagazineCardResponse
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -45,8 +46,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 添加静态文件服务
+app.mount("/magazine_cards", StaticFiles(directory="magazine_cards"), name="magazine_cards")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/files/uploads", StaticFiles(directory="uploads"), name="files_uploads")
+
 # 创建输出目录
 os.makedirs("outputs", exist_ok=True)
+os.makedirs("uploads", exist_ok=True)  # 确保上传目录存在
 
 # 任务状态存储
 task_storage = {}
@@ -815,6 +822,48 @@ def home():
         "documentation": "/docs",
         "health": "/health"
     }
+
+# 文件上传API
+@app.post("/api/upload", response_model=Dict[str, str])
+async def upload_file(
+    qr_code: Optional[UploadFile] = File(None),
+    product_image: Optional[UploadFile] = File(None)
+):
+    """处理文件上传"""
+    result = {}
+    
+    try:
+        # 创建上传目录
+        upload_dir = os.path.join("uploads", datetime.now().strftime("%Y%m%d"))
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # 处理二维码文件
+        if qr_code:
+            filename = f"qr_{uuid.uuid4()}{os.path.splitext(qr_code.filename)[1]}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as f:
+                content = await qr_code.read()
+                f.write(content)
+            
+            result["qr_code_url"] = f"/uploads/{datetime.now().strftime('%Y%m%d')}/{filename}"
+        
+        # 处理产品图片
+        if product_image:
+            filename = f"product_{uuid.uuid4()}{os.path.splitext(product_image.filename)[1]}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as f:
+                content = await product_image.read()
+                f.write(content)
+            
+            result["product_image_url"] = f"/uploads/{datetime.now().strftime('%Y%m%d')}/{filename}"
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"文件上传失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"文件上传失败: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

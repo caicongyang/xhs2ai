@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑暗美学知识卡片</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --dark: #0a0a0a;
+            --light: #1a1a1a;
+            --accent: #8b0000;
+            --text: #d3d3d3;
+        }
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--black);
+            color: var(--text);
+        }
+        .gothic {
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .border-thorn {
+            position: relative;
+            border: 1px solid var(--light);
+        }
+        .border-thorn:before, .border-thorn:after {
+            content: "†";
+            position: absolute;
+            color: var(--accent);
+            font-size: 12px;
+        }
+        .border-thorn:before {
+            top: -8px;
+            left: -8px;
+        }
+        .border-thorn:after {
+            bottom: -8px;
+            right: -8px;
+        }
+        .noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.20'/%3E%3C/svg%3E");
+        }
+        .product-img {
+            filter: grayscale(100%) contrast(150%);
+            border: 1px solid var(--light);
+        }
+        .qr-code {
+            mix-blend-mode: luminosity;
+            opacity: 0.8;
+        }
+        .scroll-effect {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-4">
+    <div class="w-[440px] bg-black border border-gray-800 noise relative overflow-hidden scroll-effect" id="card">
+        <!-- 装饰元素 -->
+        <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+            <div class="absolute top-4 left-4 text-xs text-gray-600 rotate-90">NECROSIS</div>
+            <div class="absolute bottom-4 right-4 text-xs text-gray-600 -rotate-90">MORTEM</div>
+            <div class="absolute top-1/2 left-4 text-xs text-gray-600">†††</div>
+            <div class="absolute top-1/2 right-4 text-xs text-gray-600">†††</div>
+        </div>
+
+        <!-- 日期区域 -->
+        <div class="px-6 pt-6">
+            <div class="text-xs text-gray-500 tracking-widest border-b border-gray-800 pb-2">DIES IRAE • <span id="current-date"></span></div>
+        </div>
+
+        <!-- 标题区域 -->
+        <div class="px-6 pt-4">
+            <h1 class="gothic text-3xl mb-2 tracking-tight text-white">1233 BLUEBERRY</h1>
+            <h2 class="text-sm text-gray-400 italic mb-4">夏日的甜蜜暴击 • SUMMER'S SWEET ASSAULT</h2>
+        </div>
+
+        <!-- 引用区块 -->
+        <div class="px-6 py-4 border-t border-b border-gray-800 my-4 relative">
+            <div class="absolute top-0 left-0 w-1 h-full bg-red-900"></div>
+            <p class="text-sm italic pl-4">"
+                <span class="text-white">咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香</span>
+                <span class="text-gray-500">"</span>
+            </p>
+            <div class="text-right text-xs text-gray-500 mt-1">— LACRIMOSA</div>
+        </div>
+
+        <!-- 核心要点 -->
+        <div class="px-6 py-4">
+            <ul class="space-y-2 text-sm">
+                <li class="flex items-start">
+                    <span class="text-gray-500 mr-2">†</span>
+                    <span>18mm+超大果径，颗颗饱满如蓝宝石</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-gray-500 mr-2">†</span>
+                    <span>产地直采·-18℃锁鲜冷链凌晨出发</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-gray-500 mr-2">†</span>
+                    <span>早餐酸奶杯的C位 / 办公室抗氧能量弹</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 商品展示区 -->
+        <div class="px-6 py-4 border-t border-gray-800 mt-4">
+            <div class="flex items-start">
+                <div class="w-24 h-24 product-img mr-4 bg-gray-900 flex items-center justify-center">
+                    <img src="./diameter.jpeg" alt="商品图片" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium mb-1">高效能人士专用计时器</h3>
+                    <p class="text-xs text-gray-400 mb-2">让您的工作效率提升50%</p>
+                    <div class="text-red-900 text-sm gothic">¥128</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编辑笔记 -->
+        <div class="px-6 py-4 border-t border-gray-800 mt-4 text-xs text-gray-500">
+            <div class="flex items-start">
+                <span class="mr-2 text-red-900">✠</span>
+                <p>深夜追剧的治愈小星球 • 甜如初恋，花香暗涌 • 清晨抵达你的舌尖</p>
+            </div>
+        </div>
+
+        <!-- 二维码区域 -->
+        <div class="px-6 py-4 border-t border-gray-800 flex justify-between items-center">
+            <div class="text-xs text-gray-500">SCAN FOR MORE • 扫描获取更多</div>
+            <div class="w-16 h-16 qr-code bg-white p-1">
+                <img src="./2341744596363.jpg" alt="二维码" class="w-full h-full">
+            </div>
+        </div>
+
+        <!-- 底部装饰 -->
+        <div class="px-6 py-3 text-center text-xs text-gray-600 border-t border-gray-800">
+            <span class="mr-2">MEMENTO MORI</span>
+            <span class="mx-2">•</span>
+            <span class="ml-2">CARPE NOCTEM</span>
+        </div>
+    </div>
+
+    <script>
+        // 设置当前日期
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options).toUpperCase();
+
+        // 滚动动画
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('card');
+            setTimeout(() => {
+                card.classList.add('show');
+            }, 100);
+        });
+    </script>
+</body>
+</html>

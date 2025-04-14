@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1233蓝莓·夏日的甜蜜暴击</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #888888;
+            --light: #F5F5F5;
+            --spacing: 24px;
+            --spacing-sm: 12px;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: white;
+            color: var(--primary);
+            max-width: 440px;
+            margin: 0 auto;
+            padding: var(--spacing);
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .date {
+            font-size: 12px;
+            color: var(--secondary);
+            letter-spacing: 1px;
+            margin-bottom: var(--spacing);
+        }
+        .title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            font-size: 28px;
+            line-height: 1.3;
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+            margin-bottom: var(--spacing);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        .quote {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: var(--spacing) 0;
+            padding-left: var(--spacing-sm);
+            border-left: 1px solid var(--secondary);
+        }
+        .divider {
+            height: 1px;
+            background-color: var(--light);
+            margin: var(--spacing) 0;
+        }
+        .feature-list {
+            margin: var(--spacing) 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .feature-item:before {
+            content: "•";
+            margin-right: 8px;
+            color: var(--secondary);
+        }
+        .product {
+            margin: var(--spacing) 0;
+            position: relative;
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: var(--spacing-sm);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .product-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-sm);
+        }
+        .product-price {
+            font-weight: 500;
+            font-size: 18px;
+        }
+        .product-desc {
+            font-size: 12px;
+            color: var(--secondary);
+            max-width: 60%;
+            line-height: 1.4;
+        }
+        .editor-note {
+            font-size: 11px;
+            color: var(--secondary);
+            margin-top: var(--spacing);
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid var(--light);
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            margin: var(--spacing) auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="date">JULY 2023 · 第7期</div>
+    <h1 class="title">1233蓝莓·夏日的甜蜜暴击</h1>
+    <p class="subtitle">甜如初恋，花香暗涌</p>
+    
+    <div class="quote">
+        咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="feature-list">
+        <div class="feature-item">18mm+超大果径，颗颗饱满如蓝宝石</div>
+        <div class="feature-item">产地直采·-18℃锁鲜</div>
+        <div class="feature-item">冷链凌晨出发，清晨抵达你的舌尖</div>
+    </div>
+    
+    <div class="product">
+        <img src="https://via.placeholder.com/440x300/F5F5F5/888888?text=1233+BLUEBERRY" alt="1233蓝莓" class="product-image">
+        <div class="product-info">
+            <span class="product-price">¥128</span>
+            <span class="product-desc">早餐酸奶杯的C位 · 办公室抗氧能量弹 · 深夜追剧的治愈小星球</span>
+        </div>
+    </div>
+    
+    <img src="https://via.placeholder.com/80x80/F5F5F5/888888?text=SCAN+ME" alt="QR Code" class="qr-code">
+    
+    <div class="editor-note">
+        <strong>EDITOR'S NOTE:</strong> 建议冷藏后食用，风味更佳。搭配香槟或白葡萄酒可提升味觉体验。
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 微妙的悬停效果
+            const productImage = document.querySelector('.product-image');
+            if(productImage) {
+                productImage.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.01)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                productImage.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
