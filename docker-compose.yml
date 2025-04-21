@@ -9,7 +9,7 @@ services:
     container_name: xhs2ai-web
     restart: unless-stopped
     environment:
-      - NEXT_PUBLIC_API_URL=https://xhs.lovezxr.org
+      - NEXT_PUBLIC_API_URL=https://xhs.lovezxr.org/api
     expose:
       - "80"
     networks:
