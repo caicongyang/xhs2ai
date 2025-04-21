@@ -12,7 +12,7 @@ COPY . .
 # 构建生产版本
 RUN npm run build
 
-# 生产环境
+# 生产环境 - 使用更轻量的node镜像
 FROM node:18-alpine AS runner
 
 WORKDIR /app
@@ -20,17 +20,14 @@ WORKDIR /app
 # 设置为生产环境
 ENV NODE_ENV=production
 
-# 复制构建产物
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/public ./public
+# 安装serve
+RUN npm install -g serve
 
-# 如果需要，复制其他必要文件
-COPY --from=builder /app/next.config.js ./
+# 复制静态构建产物（注意：使用out目录而不是.next）
+COPY --from=builder /app/out ./out
 
 # 暴露端口
 EXPOSE 3000
 
-# 启动生产服务器
-CMD ["npm", "start"] 
+# 启动静态文件服务器
+CMD ["serve", "-s", "out", "-l", "3000"] 
