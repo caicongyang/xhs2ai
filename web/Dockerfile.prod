@@ -12,25 +12,17 @@ COPY . .
 # 构建生产版本
 RUN npm run build
 
-# 生产环境 - 使用更轻量的node镜像
-FROM node:18-alpine AS runner
+# 只使用静态文件，不需要Node.js运行时
+FROM nginx:alpine AS runner
 
-WORKDIR /app
+# 复制静态构建产物到Nginx的默认目录
+COPY --from=builder /app/out /usr/share/nginx/html
 
-# 设置为生产环境
-ENV NODE_ENV=production
-
-# 安装serve
-RUN npm install -g serve
-
-# 创建serve.json配置文件，确保SPA路由正确工作
-RUN echo '{"rewrites": [{"source": "/**", "destination": "/index.html"}]}' > /app/serve.json
-
-# 复制静态构建产物（注意：使用out目录而不是.next）
-COPY --from=builder /app/out ./out
+# 确保使用正确的Nginx配置
+COPY ./nginx-static.conf /etc/nginx/conf.d/default.conf
 
 # 暴露端口
-EXPOSE 3000
+EXPOSE 80
 
-# 启动静态文件服务器 - 使用SPA模式，并指定配置文件
-CMD ["serve", "-s", "out", "-l", "3000", "--config", "/app/serve.json"] 
+# Nginx默认会自动启动
+CMD ["nginx", "-g", "daemon off;"] 

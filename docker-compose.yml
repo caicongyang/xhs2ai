@@ -1,18 +1,15 @@
 version: '3.8'
 
 services:
-  # Web frontend service (Production mode)
+  # Web frontend service (Production mode) - 现在直接运行Nginx
   web:
     build:
       context: ./web
       dockerfile: Dockerfile.prod
     container_name: xhs2ai-web
     restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=/api
     expose:
-      - "3000"
+      - "80"
     networks:
       - xhs2ai-network
 
