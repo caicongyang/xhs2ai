@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile.prod
     container_name: xhs2ai-web
     restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=/api
     expose:
       - "80"
     networks:

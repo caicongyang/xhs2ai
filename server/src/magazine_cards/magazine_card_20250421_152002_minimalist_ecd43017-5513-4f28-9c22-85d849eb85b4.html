@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时尚知识卡片</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #888888;
+            --accent-color: #f5f5f5;
+            --spacing-unit: 16px;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: white;
+            color: var(--primary-color);
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+        }
+        .container {
+            width: 440px;
+            padding: calc(var(--spacing-unit) * 2);
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .date {
+            font-size: 12px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            letter-spacing: 0.1em;
+        }
+        .title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-weight: 300;
+        }
+        .quote {
+            border-left: 1px solid var(--primary-color);
+            padding-left: calc(var(--spacing-unit) * 1.5);
+            margin: calc(var(--spacing-unit) * 2) 0;
+            font-style: italic;
+            font-weight: 300;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: calc(var(--spacing-unit) * 2) 0;
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .product-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            margin-bottom: calc(var(--spacing-unit) * 0.5);
+        }
+        .product-price {
+            font-size: 18px;
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+        }
+        .product-desc {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-weight: 300;
+        }
+        .bullet-list {
+            margin: calc(var(--spacing-unit) * 2) 0;
+        }
+        .bullet-item {
+            display: flex;
+            margin-bottom: calc(var(--spacing-unit) * 0.8);
+            font-size: 14px;
+        }
+        .bullet-icon {
+            margin-right: calc(var(--spacing-unit) * 0.5);
+            color: var(--secondary-color);
+        }
+        .qr-container {
+            display: flex;
+            align-items: center;
+            margin: calc(var(--spacing-unit) * 2) 0;
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            margin-right: calc(var(--spacing-unit) * 1.5);
+        }
+        .qr-text {
+            font-size: 12px;
+            color: var(--secondary-color);
+            font-weight: 300;
+        }
+        .editor-note {
+            font-size: 12px;
+            color: var(--secondary-color);
+            padding-top: calc(var(--spacing-unit) * 1.5);
+            border-top: 1px solid #f0f0f0;
+            margin-top: calc(var(--spacing-unit) * 2);
+            font-weight: 300;
+        }
+        .editor-note-title {
+            font-weight: 500;
+            margin-bottom: calc(var(--spacing-unit) * 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date">21 AVRIL 2024</div>
+        <h1 class="title">夏日蓝莓指南</h1>
+        <div class="subtitle">L'ART DE VIVRE EN ÉTÉ</div>
+        
+        <div class="quote">
+            "甜如初恋，花香暗涌 —— 这是属于夏日的甜蜜暴击"
+        </div>
+        
+        <div class="bullet-list">
+            <div class="bullet-item">
+                <span class="bullet-icon">•</span>
+                <span>18mm+超大果径，颗颗饱满如蓝宝石</span>
+            </div>
+            <div class="bullet-item">
+                <span class="bullet-icon">•</span>
+                <span>产地直采·-18℃锁鲜冷链</span>
+            </div>
+            <div class="bullet-item">
+                <span class="bullet-icon">•</span>
+                <span>汁水炸裂的甜，尾调是若有若无的山茶花香</span>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <img src="http://localhost:8000/uploads/20250421/product_865d54d6-dd2f-4e22-a431-dbc4dc79eef9.jpeg" alt="蓝莓" class="product-image">
+        <h2 class="product-title">1233蓝莓</h2>
+        <div class="product-price">¥109</div>
+        <div class="product-desc">
+            早餐酸奶杯的C位 · 办公室抗氧能量弹 · 深夜追剧的治愈小星球
+        </div>
+        
+        <div class="qr-container">
+            <img src="http://localhost:8000/uploads/20250421/qr_7baa5843-e983-414f-87fc-952d3d7fea5d.png" alt="二维码" class="qr-code">
+            <div class="qr-text">Scan for more<br>夏日限定特惠</div>
+        </div>
+        
+        <div class="editor-note">
+            <div class="editor-note-title">EDITOR'S NOTE</div>
+            <p>蓝莓富含花青素，是天然的抗氧化剂。建议冷藏保存，最佳赏味期为3天内。</p>
+        </div>
+    </div>
+</body>
+</html>

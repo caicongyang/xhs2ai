@@ -2,6 +2,9 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# 设置构建环境变量
+ENV NEXT_PUBLIC_API_URL=/api
+
 # 复制依赖文件
 COPY package.json package-lock.json ./
 RUN npm ci

@@ -20,6 +20,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# 获取base_url环境变量，用于生成绝对URL路径
+BASE_URL = os.getenv("BASE_URL", "")
+logger.info(f"使用BASE_URL: {BASE_URL}")
+
 # 杂志卡片风格枚举
 class MagazineStyle(str, Enum):
     MINIMALIST = "minimalist"
@@ -222,6 +226,7 @@ class MagazineCardGenerator:
 * 二维码图片路径: {qr_code_url}
 * 图片路径必须直接使用提供的路径，不要修改或使用blob URL
 * 如果图片路径为空，可以使用占位图片或隐藏相应的图片元素
+* 不要使用localhost或其他硬编码域名，直接使用提供的相对路径
 
 **输出要求:**
 * 提供完整的HTML代码，包含所有CSS和JavaScript
@@ -297,8 +302,9 @@ class MagazineCardGenerator:
                 if os.path.exists(qr_code_dest):
                     os.remove(qr_code_dest)
                 shutil.copy2(request.qr_code_file, qr_code_dest)
-                qr_code_url = f"/magazine_cards/{qr_code_filename}"
-                logger.info(f"二维码文件已复制到: {qr_code_dest}")
+                # 使用BASE_URL生成URL路径
+                qr_code_url = f"{BASE_URL}/magazine_cards/{qr_code_filename}"
+                logger.info(f"二维码文件已复制到: {qr_code_dest}, URL: {qr_code_url}")
             except Exception as e:
                 logger.error(f"复制二维码文件失败: {str(e)}")
                 qr_code_url = request.qr_code_file
@@ -314,11 +320,19 @@ class MagazineCardGenerator:
                 if os.path.exists(product_image_dest):
                     os.remove(product_image_dest)
                 shutil.copy2(request.product_image_file, product_image_dest)
-                product_image_url = f"/magazine_cards/{product_image_filename}"
-                logger.info(f"产品图片已复制到: {product_image_dest}")
+                # 使用BASE_URL生成URL路径
+                product_image_url = f"{BASE_URL}/magazine_cards/{product_image_filename}"
+                logger.info(f"产品图片已复制到: {product_image_dest}, URL: {product_image_url}")
             except Exception as e:
                 logger.error(f"复制产品图片失败: {str(e)}")
                 product_image_url = request.product_image_file
+        
+        # 如果提供的是URL，确保它们使用正确的BASE_URL
+        if qr_code_url and not qr_code_url.startswith(("http://", "https://", "/")):
+            qr_code_url = f"{BASE_URL}/{qr_code_url.lstrip('/')}"
+            
+        if product_image_url and not product_image_url.startswith(("http://", "https://", "/")):
+            product_image_url = f"{BASE_URL}/{product_image_url.lstrip('/')}"
         
         # 准备提示输入
         prompt_inputs = {
