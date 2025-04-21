@@ -154,7 +154,8 @@ const TemplatePreview = ({ style }) => {
     neo_expressionism: '/magazine_cards/magazine_card_20250414_112349_neo_expressionism_0246354f-deb0-40db-8d34-331742e73bf5.html',
     black_metal: '/magazine_cards/magazine_card_20250414_111732_black_metal_1847e87a-5055-4af1-8a83-1efecf2924b9.html',
     surrealist_collage: '/magazine_cards/magazine_card_20250414_112638_surrealist_collage_e33d783b-c3dc-4b27-b3aa-4b2ca1f3775a.html',
-    constructivism: '/magazine_cards/magazine_card_20250414_112102_constructivism_d68162ed-7ab2-49c8-80d0-022779c4fea9.html'
+    constructivism: '/magazine_cards/magazine_card_20250414_112102_constructivism_d68162ed-7ab2-49c8-80d0-022779c4fea9.html',
+    minimalist: '/magazine_cards/magazine_card_20250421_093713_minimalist_da90b20e-25f2-425a-a452-dedf302d9672.html'
   };
 
   const templateUrl = templateMap[style];

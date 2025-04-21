@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级时尚杂志风格知识卡片</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #555555;
+            --light-color: #f8f8f8;
+            --spacing-unit: 8px;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--primary-color);
+            background-color: white;
+            line-height: 1.6;
+        }
+        .magazine-card {
+            width: 440px;
+            max-height: 1280px;
+            margin: 0 auto;
+            padding: calc(var(--spacing-unit) * 4);
+            box-sizing: border-box;
+        }
+        .date {
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+            text-transform: uppercase;
+        }
+        .title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            font-size: 28px;
+            line-height: 1.3;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+        .subtitle {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 4);
+            font-weight: 300;
+        }
+        .quote {
+            border-left: 1px solid var(--primary-color);
+            padding-left: calc(var(--spacing-unit) * 3);
+            margin: calc(var(--spacing-unit) * 4) 0;
+            font-style: italic;
+            font-weight: 300;
+        }
+        .divider {
+            height: 1px;
+            background-color: #eee;
+            margin: calc(var(--spacing-unit) * 4) 0;
+        }
+        .product-container {
+            margin: calc(var(--spacing-unit) * 4) 0;
+            position: relative;
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+        .product-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: var(--spacing-unit);
+        }
+        .product-price {
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+        .product-desc {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+        .bullet-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: calc(var(--spacing-unit) * 3) 0;
+        }
+        .bullet-list li {
+            position: relative;
+            padding-left: calc(var(--spacing-unit) * 3);
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            font-size: 14px;
+        }
+        .bullet-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+        .editor-note {
+            font-size: 11px;
+            color: var(--secondary-color);
+            border-top: 1px solid #eee;
+            padding-top: calc(var(--spacing-unit) * 2);
+            margin-top: calc(var(--spacing-unit) * 4);
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            margin: calc(var(--spacing-unit) * 4) 0;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-card fade-in">
+        <div class="date">21 AVRIL 2024</div>
+        <h1 class="title">夏日味觉诗篇</h1>
+        <p class="subtitle">Seasonal Delicacy · 时令之味</p>
+        
+        <div class="quote">
+            "咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香"
+        </div>
+        
+        <div class="product-container">
+            <img src="http://localhost:8000/uploads/20250421/product_508ffb6a-98d5-4e58-b0b4-21f720f03459.jpeg" alt="蓝莓" class="product-image">
+            <h3 class="product-title">🌿 1233蓝莓·夏日的甜蜜暴击 🌸</h3>
+            <div class="product-price">¥129</div>
+            <p class="product-desc">
+                ✨ 甜如初恋，花香暗涌<br>
+                🍇 18mm+超大果径，颗颗饱满如蓝宝石<br>
+                🌱 产地直采·-18℃锁鲜<br>
+                冷链凌晨出发，清晨抵达你的舌尖
+            </p>
+            
+            <ul class="bullet-list">
+                <li>早餐酸奶杯的C位</li>
+                <li>办公室抗氧能量弹</li>
+                <li>深夜追剧的治愈小星球</li>
+            </ul>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <img src="http://localhost:8000/uploads/20250421/qr_e02f1d4d-9c33-4fd9-a594-d9f024dad348.png" alt="二维码" class="qr-code">
+        
+        <div class="editor-note">
+            EDITOR'S NOTE: 建议搭配希腊酸奶和少许蜂蜜食用，感受蓝莓在舌尖绽放的多层次风味。Consommez avec modération.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时尚杂志知识卡片</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #666666;
+            --accent-color: #f5f5f5;
+            --spacing-unit: 8px;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: white;
+            color: var(--primary-color);
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+        }
+        .container {
+            width: 440px;
+            padding: calc(var(--spacing-unit) * 4);
+            margin: 0 auto;
+        }
+        .date {
+            font-size: 12px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing-unit) * 4);
+            font-weight: 300;
+        }
+        .quote {
+            border-left: 1px solid var(--primary-color);
+            padding-left: calc(var(--spacing-unit) * 3);
+            margin: calc(var(--spacing-unit) * 4) 0;
+            font-style: italic;
+        }
+        .feature-list {
+            margin: calc(var(--spacing-unit) * 4) 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+        .feature-icon {
+            margin-right: calc(var(--spacing-unit) * 2);
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+        .product-container {
+            margin: calc(var(--spacing-unit) * 5) 0;
+            position: relative;
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+        .product-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: calc(var(--spacing-unit) * 2);
+        }
+        .product-price {
+            font-weight: 500;
+            font-size: 18px;
+        }
+        .product-desc {
+            font-size: 14px;
+            color: var(--secondary-color);
+            max-width: 70%;
+        }
+        .editor-note {
+            font-size: 12px;
+            color: var(--secondary-color);
+            border-top: 1px solid var(--accent-color);
+            padding-top: calc(var(--spacing-unit) * 2);
+            margin-top: calc(var(--spacing-unit) * 4);
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            margin: calc(var(--spacing-unit) * 4) auto;
+            display: block;
+            opacity: 0.8;
+        }
+        .divider {
+            height: 1px;
+            background-color: var(--accent-color);
+            margin: calc(var(--spacing-unit) * 4) 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date" id="current-date"></div>
+        
+        <h1 class="title">1233蓝莓·夏日的甜蜜暴击</h1>
+        <p class="subtitle">甜如初恋，花香暗涌</p>
+        
+        <div class="quote">
+            "咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香"
+        </div>
+        
+        <div class="feature-list">
+            <div class="feature-item">
+                <span class="feature-icon">▫</span>
+                <span>18mm+超大果径，颗颗饱满如蓝宝石</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">▫</span>
+                <span>产地直采·-18℃锁鲜</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">▫</span>
+                <span>冷链凌晨出发，清晨抵达你的舌尖</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">▫</span>
+                <span>早餐酸奶杯的C位</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">▫</span>
+                <span>办公室抗氧能量弹</span>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="product-container">
+            <img src="/uploads/20250421/product_43a055d3-15d3-4729-b3be-68cd4df62fcd.jpeg" alt="蓝莓产品图" class="product-image">
+            <div class="product-info">
+                <span class="product-desc">Premium Blueberries · 125g</span>
+                <span class="product-price">¥39</span>
+            </div>
+        </div>
+        
+        <div class="editor-note">
+            <p>编辑笔记：建议搭配希腊酸奶和蜂蜜享用，或作为下午茶的健康零食。冷藏保存可保持最佳口感。</p>
+        </div>
+        
+        <img src="" alt="二维码" class="qr-code">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前日期
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+            
+            // 微妙的淡入效果
+            document.querySelector('.container').style.opacity = '0';
+            setTimeout(() => {
+                document.querySelector('.container').style.transition = 'opacity 0.5s ease';
+                document.querySelector('.container').style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

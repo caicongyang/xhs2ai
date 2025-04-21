@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时尚杂志风格知识卡片</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --electric-blue: #00f0ff;
+            --vivid-yellow: #fff000;
+            --deep-purple: #1a0033;
+            --white: #ffffff;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--deep-purple);
+            color: var(--white);
+        }
+        .magazine-card {
+            width: 440px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a0033 0%, #330033 100%);
+            border: 2px solid var(--electric-blue);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+        .date {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 14px;
+            color: var(--electric-blue);
+            transform: rotate(5deg);
+            font-weight: 700;
+        }
+        .main-title {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 20px;
+            color: var(--neon-pink);
+            text-shadow: 3px 3px 0 var(--electric-blue);
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: -2px;
+            transform: skew(-5deg);
+        }
+        .subtitle {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--vivid-yellow);
+            margin-bottom: 30px;
+            transform: rotate(-2deg);
+            max-width: 80%;
+        }
+        .quote {
+            font-size: 18px;
+            font-style: italic;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid var(--neon-pink);
+            background-color: rgba(255, 0, 255, 0.1);
+            transform: rotate(1deg);
+            position: relative;
+            z-index: 1;
+        }
+        .quote::before {
+            content: '"';
+            font-size: 60px;
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            color: rgba(255, 0, 255, 0.3);
+            z-index: -1;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 40px 0;
+        }
+        .feature-item {
+            padding: 10px;
+            background-color: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--electric-blue);
+            font-size: 14px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .feature-item:hover {
+            transform: scale(1.05);
+            background-color: rgba(0, 240, 255, 0.2);
+        }
+        .feature-item::before {
+            content: "✦";
+            color: var(--vivid-yellow);
+            margin-right: 5px;
+        }
+        .product {
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px dashed var(--neon-pink);
+        }
+        .product-image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .product:hover .product-image {
+            transform: scale(1.1);
+        }
+        .product-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 10px;
+        }
+        .product-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+        .product-desc {
+            font-size: 12px;
+            color: var(--electric-blue);
+            margin-bottom: 5px;
+        }
+        .product-price {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--vivid-yellow);
+        }
+        .editor-note {
+            font-size: 12px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--neon-pink);
+            margin-top: 30px;
+            position: relative;
+        }
+        .editor-note::before {
+            content: "EDITOR'S NOTE";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--deep-purple);
+            padding: 0 10px;
+            font-size: 10px;
+            color: var(--neon-pink);
+            font-weight: 700;
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            background-color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            border: 2px solid var(--vivid-yellow);
+        }
+        .qr-code i {
+            font-size: 40px;
+            color: var(--deep-purple);
+        }
+        .decoration {
+            position: absolute;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            transform: rotate(-90deg);
+            right: -30px;
+            top: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-card">
+        <div class="date" id="current-date"></div>
+        <div class="decoration">FASHION DIGITAL EDITION</div>
+        
+        <h1 class="main-title">蓝莓<br>夏日的<br>甜蜜暴击</h1>
+        <p class="subtitle">甜如初恋，花香暗涌</p>
+        
+        <div class="quote">
+            咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">18mm+超大果径</div>
+            <div class="feature-item">颗颗饱满如蓝宝石</div>
+            <div class="feature-item">产地直采·-18℃锁鲜</div>
+            <div class="feature-item">冷链凌晨出发</div>
+            <div class="feature-item">早餐酸奶杯的C位</div>
+            <div class="feature-item">办公室抗氧能量弹</div>
+        </div>
+        
+        <div class="product">
+            <img src="/uploads/20250421/product_0ec956ad-f8fa-4347-99e4-7f7b98ab4933.jpeg" alt="蓝莓" class="product-image">
+            <div class="product-info">
+                <div class="product-title">1233蓝莓</div>
+                <div class="product-desc">清晨抵达你的舌尖</div>
+                <div class="product-price">¥99</div>
+            </div>
+        </div>
+        
+        <div class="qr-code">
+            <i class="fas fa-qrcode"></i>
+        </div>
+        
+        <div class="editor-note">
+            本季精选蓝莓来自云南高山有机种植园，每日限量供应，建议搭配希腊酸奶或燕麦碗食用，风味更佳。
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前日期
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+            
+            // 添加悬停效果
+            const featureItems = document.querySelectorAll('.feature-item');
+            featureItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 0 15px var(--electric-blue)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

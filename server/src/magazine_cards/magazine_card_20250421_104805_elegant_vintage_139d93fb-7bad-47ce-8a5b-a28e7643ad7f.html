@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage Magazine Style</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #f5f0e6;
+            --text: #3a3226;
+            --accent: #8b2e2e;
+            --border: #c4b8a5;
+            --highlight: #e8d8c3;
+        }
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--paper);
+            color: var(--text);
+            padding: 20px;
+            max-width: 440px;
+            margin: 0 auto;
+            position: relative;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L100 0 L100 100 L0 100 Z" fill="none" stroke="%23c4b8a5" stroke-width="0.5" stroke-dasharray="2,2"/></svg>');
+            background-size: 20px 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .magazine-card {
+            background-color: var(--paper);
+            border: 1px solid var(--border);
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .magazine-card::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid var(--border);
+            pointer-events: none;
+        }
+        .date {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 1px;
+            background-color: var(--accent);
+        }
+        .subtitle {
+            font-size: 16px;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        .quote {
+            font-size: 18px;
+            line-height: 1.6;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-left: 3px solid var(--accent);
+            background-color: var(--highlight);
+            position: relative;
+        }
+        .quote::before {
+            content: "“";
+            font-size: 60px;
+            position: absolute;
+            top: -10px;
+            left: 5px;
+            color: var(--accent);
+            opacity: 0.3;
+        }
+        .quote::after {
+            content: "”";
+            font-size: 60px;
+            position: absolute;
+            bottom: -40px;
+            right: 5px;
+            color: var(--accent);
+            opacity: 0.3;
+        }
+        .features {
+            margin: 25px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 25px;
+        }
+        .feature-item::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent);
+            font-size: 24px;
+        }
+        .product {
+            margin: 30px 0;
+            position: relative;
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            filter: sepia(0.3) contrast(0.9) brightness(1.1);
+            border: 1px solid var(--border);
+        }
+        .product-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .product-price {
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .editor-note {
+            font-size: 14px;
+            padding: 15px;
+            background-color: var(--highlight);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            margin: 25px 0;
+            position: relative;
+        }
+        .editor-note::before {
+            content: "Note de l'éditeur";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background-color: var(--paper);
+            padding: 0 5px;
+            font-size: 12px;
+            color: var(--accent);
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .qr-code img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--border);
+            padding: 5px;
+            background-color: white;
+        }
+        .qr-code p {
+            font-size: 12px;
+            margin-top: 5px;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+        }
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-card">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        
+        <div class="date">21 MAI 2024 • ÉDITION LIMITÉE</div>
+        
+        <h1 class="title">1233蓝莓</h1>
+        <h2 class="subtitle">夏日的甜蜜暴击</h2>
+        
+        <div class="quote">
+            咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">甜如初恋，花香暗涌</div>
+            <div class="feature-item">18mm+超大果径，颗颗饱满如蓝宝石</div>
+            <div class="feature-item">产地直采·-18℃锁鲜</div>
+            <div class="feature-item">冷链凌晨出发，清晨抵达你的舌尖</div>
+        </div>
+        
+        <div class="product">
+            <img src="/uploads/20250421/product_d9e5e832-6e1e-451c-b645-43d949b74485.jpeg" alt="1233蓝莓" class="product-image">
+            <div class="product-info">
+                <div class="product-desc">早餐酸奶杯的C位 • 办公室抗氧能量弹</div>
+                <div class="product-price">¥128</div>
+            </div>
+        </div>
+        
+        <div class="editor-note">
+            建议搭配希腊酸奶或香草冰淇淋食用，冷藏后风味更佳。每日限量供应，建议提前预定。
+        </div>
+        
+        <div class="qr-code">
+            <img src="" alt="QR Code">
+            <p>Scan for more details</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.querySelector('.date').textContent = now.toLocaleDateString('fr-FR', options).toUpperCase() + ' • ÉDITION LIMITÉE';
+        });
+    </script>
+</body>
+</html>
