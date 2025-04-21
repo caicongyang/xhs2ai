@@ -66,6 +66,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 创建所有必需的目录
+dirs_to_create = [
+    "magazine_cards", 
+    "uploads", 
+    "outputs", 
+    "templates", 
+    "generated_images", 
+    "minimaxi_videos",
+    "videos"
+]
+for dir_name in dirs_to_create:
+    os.makedirs(dir_name, exist_ok=True)
+    print(f"确保目录存在: {dir_name}")
+
 # 添加静态文件服务
 app.mount("/magazine_cards", StaticFiles(directory="magazine_cards"), name="magazine_cards")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
