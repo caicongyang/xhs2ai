@@ -11,6 +11,8 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=/api
+    expose:
+      - "3000"
     networks:
       - xhs2ai-network
 
