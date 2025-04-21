@@ -16,16 +16,36 @@ import json
 import time
 from datetime import datetime
 
-# 导入各个功能模块
-from minimaxi_image_generator import MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat
-from minimaxi_video_generator import MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType
-from keling_video_generator import VideoGenerator as KlingVideoGenerator
-from keling_image_generator import ImageGenerator as KlingImageGenerator, ImageStyle as KlingImageStyle, ImageRatio
-from cover_generator import CoverGenerator, CoverStyle
-from url_content_rewriter import UrlContentRewriter
-from title_rewriter import TitleRewriter
-from content_style_rewriter import ContentStyleRewriter
-from magazine_card_generator import get_magazine_card_generator, MagazineCardRequest, MagazineStyle, MagazineCardResponse
+# 导入各个功能模块 - 使用方式二：利用__init__.py的包导入方式
+try:
+    # 尝试使用相对导入，从当前包导入所有模块
+    from . import (
+        MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat,
+        MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType,
+        KlingVideoGenerator, KlingImageGenerator, KlingImageStyle, ImageRatio,
+        CoverGenerator, CoverStyle,
+        UrlContentRewriter, TitleRewriter, ContentStyleRewriter,
+        get_magazine_card_generator, MagazineCardRequest, MagazineStyle, MagazineCardResponse
+    )
+except ImportError:
+    # 如果相对导入失败，尝试从src包导入
+    try:
+        import sys
+        from pathlib import Path
+        # 添加server目录到Python路径
+        sys.path.append(str(Path(__file__).parent.parent))
+        
+        from src import (
+            MiniMaxiImageGenerator, ImageModel, ImageSize, ImageStyle, ImageFormat,
+            MiniMaxiVideoGenerator, VideoQuality, VideoFormat, VideoContentType,
+            KlingVideoGenerator, KlingImageGenerator, KlingImageStyle, ImageRatio,
+            CoverGenerator, CoverStyle,
+            UrlContentRewriter, TitleRewriter, ContentStyleRewriter,
+            get_magazine_card_generator, MagazineCardRequest, MagazineStyle, MagazineCardResponse
+        )
+    except ImportError as e:
+        logging.error(f"导入模块失败: {e}")
+        raise
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
