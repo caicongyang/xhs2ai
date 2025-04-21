@@ -40,11 +40,41 @@ const checkTaskStatus = async (taskId) => {
 
 // 获取生成的文件
 const getFile = (filePath) => {
-  // 检查路径是否已经以/api/files/开头
-  if (filePath.startsWith('/api/files/')) {
-    return `${API_BASE_URL}${filePath}`;
+  // 清理路径
+  let cleanPath = filePath;
+  
+  // 处理绝对路径：如果包含/app/src/magazine_cards/或类似路径，提取出最后的文件名部分
+  if (cleanPath.includes('/magazine_cards/')) {
+    const parts = cleanPath.split('/magazine_cards/');
+    cleanPath = '/magazine_cards/' + parts[parts.length - 1];
   }
-  return `${API_BASE_URL}/api/files/${filePath}`;
+  
+  // 处理重复的/api前缀
+  if (cleanPath.startsWith('/api/api/')) {
+    cleanPath = cleanPath.replace('/api/api/', '/api/');
+  }
+  
+  // 去除多余的斜杠
+  cleanPath = cleanPath.replace(/\/+/g, '/');
+  
+  // 确保baseUrl没有结尾的斜杠，避免重复斜杠
+  const baseUrl = API_BASE_URL.endsWith('/') 
+    ? API_BASE_URL.slice(0, -1) 
+    : API_BASE_URL;
+  
+  // 如果API_BASE_URL已经包含/api，并且cleanPath也以/api开头，避免重复
+  if (baseUrl.endsWith('/api') && cleanPath.startsWith('/api/')) {
+    const apiTrimmedBaseUrl = baseUrl.slice(0, -4); // 移除/api
+    return `${apiTrimmedBaseUrl}${cleanPath}`;
+  }
+  
+  // 正常情况：处理已经包含/api/files/的路径
+  if (cleanPath.startsWith('/api/files/')) {
+    return `${baseUrl}${cleanPath}`;
+  }
+  
+  // 其他情况，添加/api/files/前缀
+  return `${baseUrl}/api/files/${cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath}`;
 };
 
 // 标题重写相关API

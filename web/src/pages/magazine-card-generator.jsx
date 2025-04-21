@@ -357,8 +357,28 @@ export default function MagazineCardGeneratorPage() {
   // 获取HTML内容
   const fetchHtmlContent = async (url) => {
     try {
-      console.log('正在获取HTML内容，URL:', url);
-      const response = await fetch(url);
+      console.log('原始URL:', url);
+      
+      // 清理URL，修复可能的URL问题
+      let cleanUrl = url;
+      
+      // 修复重复的/api
+      if (cleanUrl.includes('/api/api/')) {
+        cleanUrl = cleanUrl.replace('/api/api/', '/api/');
+      }
+      
+      // 修复服务器绝对路径
+      if (cleanUrl.includes('//app/src/magazine_cards/')) {
+        const fileName = cleanUrl.split('magazine_cards/').pop();
+        const baseUrl = cleanUrl.substring(0, cleanUrl.indexOf('/api/'));
+        cleanUrl = `${baseUrl}/api/files/magazine_cards/${fileName}`;
+      }
+      
+      // 修复多余的斜杠
+      cleanUrl = cleanUrl.replace(/([^:])\/+/g, '$1/');
+      
+      console.log('清理后的URL:', cleanUrl);
+      const response = await fetch(cleanUrl);
       if (!response.ok) {
         throw new Error(`HTTP错误: ${response.status} ${response.statusText}`);
       }
