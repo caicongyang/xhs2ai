@@ -23,11 +23,14 @@ ENV NODE_ENV=production
 # 安装serve
 RUN npm install -g serve
 
+# 创建serve.json配置文件，确保SPA路由正确工作
+RUN echo '{"rewrites": [{"source": "/**", "destination": "/index.html"}]}' > /app/serve.json
+
 # 复制静态构建产物（注意：使用out目录而不是.next）
 COPY --from=builder /app/out ./out
 
 # 暴露端口
 EXPOSE 3000
 
-# 启动静态文件服务器 - 使用SPA模式
-CMD ["serve", "-s", "out", "-l", "3000"] 
+# 启动静态文件服务器 - 使用SPA模式，并指定配置文件
+CMD ["serve", "-s", "out", "-l", "3000", "--config", "/app/serve.json"] 
