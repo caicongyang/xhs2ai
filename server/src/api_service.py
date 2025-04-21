@@ -640,7 +640,7 @@ async def generate_magazine_card(
             # 处理文件路径，确保只返回相对路径
             # 从绝对路径中提取文件名
             file_name = os.path.basename(response.file_path)
-            # 构建相对路径，避免使用绝对路径
+            # 构建简单的相对路径
             relative_path = f"/magazine_cards/{file_name}"
             
             logger.info(f"处理后的相对路径: {relative_path}")
