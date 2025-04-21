@@ -640,8 +640,8 @@ async def generate_magazine_card(
             # 处理文件路径，确保只返回相对路径
             # 从绝对路径中提取文件名
             file_name = os.path.basename(response.file_path)
-            # 构建简单的相对路径
-            relative_path = f"/magazine_cards/{file_name}"
+            # 构建包含src目录的相对路径
+            relative_path = f"/src/magazine_cards/{file_name}"
             
             logger.info(f"处理后的相对路径: {relative_path}")
             
@@ -737,6 +737,14 @@ def get_task_status(task_id: str):
 @app.get("/api/files/{file_path:path}")
 def get_file(file_path: str):
     """获取生成的文件内容"""
+    logger.info(f"请求文件: {file_path}")
+    
+    # 处理可能的src目录前缀
+    if file_path.startswith("src/"):
+        # 如果路径以src/开头，移除src/并记录
+        file_path = file_path[4:]
+        logger.info(f"检测到src/前缀，已移除: {file_path}")
+    
     # 检查文件是否存在，先直接检查原始路径
     if os.path.exists(file_path) and os.path.isfile(file_path):
         logger.info(f"文件找到(原始路径): {file_path}")
@@ -755,6 +763,12 @@ def get_file(file_path: str):
         logger.info(f"文件找到(清理路径): {cleaned_path}")
         return FileResponse(cleaned_path)
     
+    # 尝试src目录下的路径
+    src_path = os.path.join("src", cleaned_path)
+    if os.path.exists(src_path) and os.path.isfile(src_path):
+        logger.info(f"文件找到(src路径): {src_path}")
+        return FileResponse(src_path)
+    
     # 尝试outputs目录下的路径
     outputs_path = os.path.join("outputs", cleaned_path)
     if os.path.exists(outputs_path) and os.path.isfile(outputs_path):
@@ -767,6 +781,12 @@ def get_file(file_path: str):
         logger.info(f"文件找到(magazine_cards路径): {magazine_cards_path}")
         return FileResponse(magazine_cards_path)
     
+    # 尝试src/magazine_cards目录
+    src_magazine_path = os.path.join("src", "magazine_cards", os.path.basename(cleaned_path))
+    if os.path.exists(src_magazine_path) and os.path.isfile(src_magazine_path):
+        logger.info(f"文件找到(src/magazine_cards路径): {src_magazine_path}")
+        return FileResponse(src_magazine_path)
+    
     # 尝试templates目录
     templates_path = os.path.join("templates", os.path.basename(cleaned_path))
     if os.path.exists(templates_path) and os.path.isfile(templates_path):
@@ -775,8 +795,10 @@ def get_file(file_path: str):
     
     # 输出调试信息
     logger.error(f"文件未找到: 原始路径={file_path}")
-    logger.error(f"尝试路径: 绝对路径={absolute_path}, 清理路径={cleaned_path}, outputs路径={outputs_path}")
-    logger.error(f"尝试路径: magazine_cards路径={magazine_cards_path}, templates路径={templates_path}")
+    logger.error(f"尝试路径: 绝对路径={absolute_path}, 清理路径={cleaned_path}")
+    logger.error(f"尝试路径: src路径={src_path}, outputs路径={outputs_path}")
+    logger.error(f"尝试路径: magazine_cards路径={magazine_cards_path}, src/magazine_cards路径={src_magazine_path}")
+    logger.error(f"尝试路径: templates路径={templates_path}")
     logger.info(f"当前工作目录: {current_dir}")
     
     raise HTTPException(status_code=404, detail=f"File not found: {file_path}")

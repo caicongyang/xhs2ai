@@ -4,7 +4,23 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // 基础API请求函数
 const apiRequest = async (endpoint, options = {}) => {
-  const url = `${API_BASE_URL}${endpoint}`;
+  // 确保baseUrl没有结尾的斜杠
+  const baseUrl = API_BASE_URL.endsWith('/') 
+    ? API_BASE_URL.slice(0, -1) 
+    : API_BASE_URL;
+  
+  // 确保endpoint以斜杠开头
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  
+  // 处理重复的/api前缀问题
+  let finalEndpoint = normalizedEndpoint;
+  if (baseUrl.endsWith('/api') && normalizedEndpoint.startsWith('/api/')) {
+    finalEndpoint = normalizedEndpoint.substring(4); // 去掉重复的 /api
+    console.log('检测到重复的/api前缀，已修正:', normalizedEndpoint, '->', finalEndpoint);
+  }
+  
+  const url = `${baseUrl}${finalEndpoint}`;
+  console.log('API请求URL:', url);
   
   const defaultHeaders = {
     'Content-Type': 'application/json',
@@ -45,22 +61,30 @@ const getFile = (filePath) => {
   // 清理路径
   let cleanPath = filePath;
   
-  // 如果是杂志卡片路径，确保格式正确
+  // 如果是杂志卡片路径，确保添加src目录
   if (cleanPath.includes('magazine_cards')) {
     const fileName = cleanPath.split('magazine_cards/').pop();
-    cleanPath = `/magazine_cards/${fileName}`;
+    cleanPath = `/api/files/src/magazine_cards/${fileName}`;
+  } else if (!cleanPath.startsWith('/api/')) {
+    // 如果路径不是以/api/开头，添加/api/files/前缀
+    cleanPath = `/api/files/${cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath}`;
   }
   
   // 去除多余的斜杠
-  cleanPath = cleanPath.replace(/\/+/g, '/');
+  cleanPath = cleanPath.replace(/([^:])\/+/g, '$1/');
   
   // 确保baseUrl没有结尾的斜杠
   const baseUrl = API_BASE_URL.endsWith('/') 
     ? API_BASE_URL.slice(0, -1) 
     : API_BASE_URL;
   
-  // 直接构造URL：如果cleanPath以/开头，直接连接；否则加上/
-  const finalUrl = baseUrl + (cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`);
+  // 处理可能的重复/api前缀
+  if (baseUrl.endsWith('/api') && cleanPath.startsWith('/api/')) {
+    cleanPath = cleanPath.substring(4); // 移除开头的/api
+  }
+  
+  // 构造最终URL
+  const finalUrl = `${baseUrl}${cleanPath}`;
   
   console.log('构造的文件URL:', finalUrl);
   return finalUrl;

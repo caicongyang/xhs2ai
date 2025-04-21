@@ -362,19 +362,27 @@ export default function MagazineCardGeneratorPage() {
       // 清理URL，修复可能的URL问题
       let cleanUrl = url;
       
-      // 修复重复的/api
-      if (cleanUrl.includes('/api/api/')) {
+      // 获取baseUrl部分(域名)
+      const baseUrlMatch = cleanUrl.match(/^(https?:\/\/[^\/]+)/);
+      const baseUrl = baseUrlMatch ? baseUrlMatch[1] : '';
+      
+      // 提取文件名 - 针对杂志卡片
+      let fileName = '';
+      if (cleanUrl.includes('magazine_cards')) {
+        const parts = cleanUrl.split('magazine_cards/');
+        fileName = parts[parts.length - 1];
+      }
+      
+      // 处理各种URL情况
+      if (fileName) {
+        // 统一杂志卡片的URL格式
+        cleanUrl = `${baseUrl}/api/files/src/magazine_cards/${fileName}`;
+      } else if (cleanUrl.includes('/api/api/')) {
+        // 修复重复的/api前缀
         cleanUrl = cleanUrl.replace('/api/api/', '/api/');
       }
       
-      // 修复服务器绝对路径
-      if (cleanUrl.includes('//app/src/magazine_cards/')) {
-        const fileName = cleanUrl.split('magazine_cards/').pop();
-        const baseUrl = cleanUrl.substring(0, cleanUrl.indexOf('/api/'));
-        cleanUrl = `${baseUrl}/api/files/magazine_cards/${fileName}`;
-      }
-      
-      // 修复多余的斜杠
+      // 修复多余的斜杠(注意不要处理协议中的双斜杠)
       cleanUrl = cleanUrl.replace(/([^:])\/+/g, '$1/');
       
       console.log('清理后的URL:', cleanUrl);
