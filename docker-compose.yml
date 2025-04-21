@@ -31,6 +31,7 @@ services:
       - server_images:/app/generated_images
       - server_videos:/app/minimaxi_videos
       - server_videos2:/app/videos
+      - server_magazine_cards:/app/magazine_cards
     environment:
       - LLM_API_KEY=${LLM_API_KEY}
       - LLM_BASE_URL=${LLM_BASE_URL}
@@ -50,6 +51,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - server_outputs:/usr/share/nginx/html/outputs
       - server_templates:/usr/share/nginx/html/templates
+      - server_magazine_cards:/usr/share/nginx/html/magazine_cards
     depends_on:
       - server
       - web
@@ -65,4 +67,5 @@ volumes:
   server_templates:
   server_images:
   server_videos:
-  server_videos2: 
+  server_videos2:
+  server_magazine_cards: 

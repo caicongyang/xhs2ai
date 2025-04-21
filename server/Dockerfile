@@ -26,7 +26,6 @@ COPY src/ ./src/
 
 # Copy other necessary files
 COPY .env* ./
-COPY templates/ ./templates/
 
 # Create necessary directories
 RUN mkdir -p outputs

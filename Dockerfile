@@ -12,10 +12,10 @@ RUN mkdir -p /usr/share/nginx/html/outputs \
 # 复制 Nginx 配置文件
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-# 复制静态文件
-COPY outputs/ /usr/share/nginx/html/outputs/
-COPY templates/ /usr/share/nginx/html/templates/
-COPY magazine_cards/ /usr/share/nginx/html/magazine_cards/
+# 注释掉不存在的静态文件目录
+# COPY outputs/ /usr/share/nginx/html/outputs/
+# COPY templates/ /usr/share/nginx/html/templates/
+# COPY magazine_cards/ /usr/share/nginx/html/magazine_cards/
 
 # 暴露端口
 EXPOSE 80
