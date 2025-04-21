@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASHION EDITION</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff2ced;
+            --electric-blue: #00f0ff;
+            --bright-yellow: #ffe600;
+            --deep-purple: #1a0033;
+            --acid-green: #a3ff00;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--deep-purple);
+            color: white;
+            width: 440px;
+            margin: 0 auto;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .magazine-card {
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .date {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--electric-blue);
+            writing-mode: vertical-rl;
+            position: absolute;
+            right: -10px;
+            top: 30px;
+            transform: rotate(180deg);
+            letter-spacing: 5px;
+        }
+        .main-title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 72px;
+            line-height: 0.8;
+            color: var(--neon-pink);
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 0 var(--bright-yellow);
+            transform: rotate(-3deg);
+            position: relative;
+            z-index: 2;
+        }
+        .subtitle {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 300;
+            font-size: 18px;
+            color: white;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .subtitle::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--neon-pink), var(--electric-blue));
+        }
+        .quote {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            font-size: 24px;
+            color: var(--bright-yellow);
+            margin: 40px 0;
+            padding: 20px;
+            border-left: 8px solid var(--acid-green);
+            transform: skewX(-10deg);
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .features {
+            margin: 40px 0;
+            position: relative;
+        }
+        .features::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: -20px;
+            width: 100px;
+            height: 100px;
+            background-color: var(--electric-blue);
+            opacity: 0.2;
+            z-index: -1;
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 50% 100%, 0 50%);
+        }
+        .feature-item {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+        .feature-item::before {
+            content: '✧';
+            position: absolute;
+            left: 0;
+            color: var(--neon-pink);
+        }
+        .product {
+            margin: 50px 0;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid var(--electric-blue);
+            transform: rotate(2deg);
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .product:hover .product-image {
+            transform: scale(1.05);
+        }
+        .product-info {
+            padding: 20px;
+            background: linear-gradient(to right, rgba(26, 0, 51, 0.8), rgba(0, 240, 255, 0.3));
+            position: relative;
+        }
+        .product-title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 28px;
+            color: var(--bright-yellow);
+            margin-bottom: 10px;
+        }
+        .product-desc {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .product-price {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--neon-pink);
+        }
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            margin: 30px auto;
+            border: 2px dashed var(--acid-green);
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotate(5deg);
+        }
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .editor-note {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 300;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 40px;
+            padding: 15px;
+            border-top: 1px solid var(--electric-blue);
+            border-bottom: 1px solid var(--electric-blue);
+            position: relative;
+        }
+        .editor-note::before {
+            content: 'EDITOR\'S NOTE';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--deep-purple);
+            padding: 0 10px;
+            font-size: 10px;
+            color: var(--acid-green);
+            letter-spacing: 2px;
+        }
+        .decoration {
+            position: absolute;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            transform: rotate(-90deg);
+            right: -50px;
+            top: 150px;
+            letter-spacing: 2px;
+        }
+        .shape-1 {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--neon-pink);
+            right: -30px;
+            top: 200px;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+        .shape-2 {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: var(--electric-blue);
+            left: -20px;
+            bottom: 100px;
+            opacity: 0.2;
+            clip-path: circle(50% at 50% 50%);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-card">
+        <div class="date">2024 · SPRING · ISSUE 03</div>
+        <div class="decoration">LUXURY EDITION</div>
+        
+        <h1 class="main-title">夏日<br>甜蜜<br>宣言</h1>
+        <p class="subtitle">当蓝莓邂逅山茶花香，味蕾的时尚革命</p>
+        
+        <div class="quote">
+            "咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香"
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">甜如初恋，花香暗涌</div>
+            <div class="feature-item">18mm+超大果径，颗颗饱满如蓝宝石</div>
+            <div class="feature-item">产地直采·-18℃锁鲜</div>
+            <div class="feature-item">冷链凌晨出发，清晨抵达你的舌尖</div>
+        </div>
+        
+        <div class="product">
+            <img src="http://localhost:8000/uploads/20250421/product_096c54c5-e48d-4cdc-bdab-bca2c8230edd.jpeg" alt="蓝莓" class="product-image">
+            <div class="product-info">
+                <h3 class="product-title">1233蓝莓·夏日的甜蜜暴击</h3>
+                <p class="product-desc">
+                    ✧ 早餐酸奶杯的C位<br>
+                    ✧ 办公室抗氧能量弹<br>
+                    ✧ 深夜追剧的治愈小星球
+                </p>
+                <div class="product-price">¥129</div>
+            </div>
+        </div>
+        
+        <div class="qr-code">
+            <img src="http://localhost:8000/uploads/20250421/qr_335dbc5c-5b99-478a-9734-210172e5c76d.png" alt="QR Code">
+        </div>
+        
+        <div class="editor-note">
+            本季精选蓝莓来自云南高原有机农场，每日限量供应。建议冷藏保存，3天内食用风味最佳。搭配香槟或气泡水可提升味觉体验。
+        </div>
+        
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.main-title, .quote, .product');
+            elements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.8s ease';
+            });
+            
+            setTimeout(() => {
+                elements.forEach(el => {
+                    el.style.opacity = '1';
+                });
+            }, 100);
+            
+            document.querySelector('.product').addEventListener('mouseenter', function() {
+                this.style.transform = 'rotate(0deg) scale(1.02)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            
+            document.querySelector('.product').addEventListener('mouseleave', function() {
+                this.style.transform = 'rotate(2deg) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

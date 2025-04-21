@@ -114,8 +114,17 @@ class MagazineCardGenerator:
             self.llm = None
             
         # 创建输出目录
-        self.output_dir = "magazine_cards";
+        # 获取当前脚本所在目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # 确保使用绝对路径
+        self.output_dir = os.path.join(current_dir, "magazine_cards")
         os.makedirs(self.output_dir, exist_ok=True)
+        
+        # 确保项目根目录下的server/src/magazine_cards目录也存在
+        root_server_src_dir = os.path.join(os.getcwd(), "server", "src", "magazine_cards")
+        os.makedirs(root_server_src_dir, exist_ok=True)
+        logger.info(f"输出目录设置为: {self.output_dir}")
+        logger.info(f"确保额外目录存在: {root_server_src_dir}")
         
         # 风格描述映射表
         self.style_descriptions = {
@@ -279,13 +288,6 @@ class MagazineCardGenerator:
             "采用现代杂志风格设计，融合优雅与时尚元素。"
         )
         
-        # 获取当前脚本所在目录
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # 创建输出目录（使用绝对路径）
-        output_dir = os.path.join(current_dir, self.output_dir)
-        os.makedirs(output_dir, exist_ok=True)
-        
         # 处理图片文件路径
         qr_code_url = request.qr_code_url
         product_image_url = request.product_image_url
@@ -294,7 +296,7 @@ class MagazineCardGenerator:
         if request.qr_code_file:
             # 将文件复制到输出目录
             qr_code_filename = os.path.basename(request.qr_code_file)
-            qr_code_dest = os.path.join(output_dir, qr_code_filename)
+            qr_code_dest = os.path.join(self.output_dir, qr_code_filename)
             try:
                 # 确保目标目录存在并有正确的权限
                 os.makedirs(os.path.dirname(qr_code_dest), exist_ok=True)
@@ -312,7 +314,7 @@ class MagazineCardGenerator:
         if request.product_image_file:
             # 将文件复制到输出目录
             product_image_filename = os.path.basename(request.product_image_file)
-            product_image_dest = os.path.join(output_dir, product_image_filename)
+            product_image_dest = os.path.join(self.output_dir, product_image_filename)
             try:
                 # 确保目标目录存在并有正确的权限
                 os.makedirs(os.path.dirname(product_image_dest), exist_ok=True)
@@ -359,7 +361,7 @@ class MagazineCardGenerator:
             # 保存HTML文件，使用时间戳作为文件名的一部分
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"magazine_card_{timestamp}_{style.value}_{card_id}.html"
-            file_path = os.path.join(output_dir, filename)
+            file_path = os.path.join(self.output_dir, filename)
             
             # 确保输出目录存在
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
@@ -369,6 +371,17 @@ class MagazineCardGenerator:
                 f.write(html_content)
             
             logger.info(f"杂志卡片生成成功，保存至: {file_path}")
+            
+            # 将文件复制到项目根目录下的magazine_cards目录
+            root_magazine_cards_dir = os.path.join(os.getcwd(), "magazine_cards")
+            os.makedirs(root_magazine_cards_dir, exist_ok=True)
+            root_file_path = os.path.join(root_magazine_cards_dir, os.path.basename(file_path))
+            
+            try:
+                shutil.copy2(file_path, root_file_path)
+                logger.info(f"已复制文件到根目录: {root_file_path}")
+            except Exception as e:
+                logger.error(f"复制文件到根目录失败: {str(e)}")
                 
             # 返回响应，包含文件路径
             return MagazineCardResponse(

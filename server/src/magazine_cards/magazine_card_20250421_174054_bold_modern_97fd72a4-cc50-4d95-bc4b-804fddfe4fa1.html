@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXE MAGAZINE</title>
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --electric-blue: #05d9e8;
+            --vivid-yellow: #d1f7ff;
+            --deep-purple: #1a1a2e;
+            --acid-green: #00ff9d;
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--deep-purple);
+            color: white;
+            width: 440px;
+            overflow-x: hidden;
+        }
+        .magazine-container {
+            position: relative;
+            padding: 2rem;
+            transform-style: preserve-3d;
+        }
+        .date-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--neon-pink);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            transform: rotate(5deg);
+            box-shadow: 0 0 15px rgba(255,42,109,0.7);
+        }
+        .main-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 0.9;
+            color: var(--vivid-yellow);
+            text-transform: uppercase;
+            letter-spacing: -3px;
+            margin-bottom: 1.5rem;
+            text-shadow: 3px 3px 0 var(--neon-pink);
+            transform: skewX(-10deg);
+        }
+        .subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--electric-blue);
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+        }
+        .quote-block {
+            border-left: 5px solid var(--acid-green);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            font-size: 18px;
+            position: relative;
+        }
+        .quote-block::before {
+            content: '"';
+            font-size: 60px;
+            position: absolute;
+            left: -20px;
+            top: -20px;
+            color: rgba(0,255,157,0.3);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+        .feature-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+            font-size: 16px;
+        }
+        .feature-list li::before {
+            content: "✧";
+            position: absolute;
+            left: 0;
+            color: var(--neon-pink);
+        }
+        .product-card {
+            background: linear-gradient(135deg, rgba(26,26,46,0.8) 0%, rgba(5,217,232,0.2) 100%);
+            border: 1px solid var(--electric-blue);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(5,217,232,0.4);
+        }
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 2px solid white;
+        }
+        .product-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--vivid-yellow);
+        }
+        .product-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--acid-green);
+        }
+        .editor-note {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 3px solid var(--neon-pink);
+            padding: 1rem;
+            margin: 2rem 0;
+            font-size: 14px;
+        }
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            margin: 1rem auto;
+            border: 2px solid var(--electric-blue);
+            padding: 5px;
+        }
+        .decoration-text {
+            position: absolute;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            left: 20px;
+            top: 150px;
+            letter-spacing: 2px;
+        }
+        .decoration-shape {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px dashed var(--neon-pink);
+            right: -30px;
+            top: 300px;
+            transform: rotate(45deg);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-container">
+        <div class="date-badge" id="current-date">2024.05.20</div>
+        <div class="decoration-text">LUXURY EDITION</div>
+        <div class="decoration-shape"></div>
+        
+        <h1 class="main-title">夏日<br>甜蜜<br>暴击</h1>
+        <h2 class="subtitle">BLUEBERRY SEASON · 蓝莓季特辑</h2>
+        
+        <div class="quote-block">
+            咬破薄皮的瞬间——汁水炸裂的甜，尾调是若有若无的山茶花香
+        </div>
+        
+        <ul class="feature-list">
+            <li>18mm+超大果径，颗颗饱满如蓝宝石</li>
+            <li>产地直采·-18℃锁鲜冷链</li>
+            <li>早餐酸奶杯的C位</li>
+            <li>办公室抗氧能量弹</li>
+            <li>深夜追剧的治愈小星球</li>
+        </ul>
+        
+        <div class="product-card">
+            <img src="http://localhost:8000/uploads/20250421/product_370acb33-136d-40b8-bde9-bcc0ceffc4f5.jpeg" alt="蓝莓" class="product-image">
+            <h3 class="product-title">1233蓝莓</h3>
+            <p class="product-desc">甜如初恋，花香暗涌。冷链凌晨出发，清晨抵达你的舌尖</p>
+            <div class="product-price">¥129</div>
+        </div>
+        
+        <div class="editor-note">
+            <strong>编辑笔记：</strong> 这款蓝莓选自云南高原种植区，昼夜温差大使得糖分积累更充分。建议冷藏后食用，风味更佳。
+        </div>
+        
+        <div class="qr-code">
+            <img src="http://localhost:8000/uploads/20250421/qr_4e12689f-a6ef-4a8d-ad41-22253afcd342.png" alt="QR Code" style="width:100%;height:100%;">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前日期
+            const today = new Date();
+            const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+            document.getElementById('current-date').textContent = formattedDate;
+            
+            // 添加悬停效果
+            const productCard = document.querySelector('.product-card');
+            productCard.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            productCard.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            // 页面加载动画
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

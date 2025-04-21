@@ -74,7 +74,8 @@ dirs_to_create = [
     "templates", 
     "generated_images", 
     "minimaxi_videos",
-    "videos"
+    "videos",
+    "server/src/magazine_cards"  # 添加这个目录确保它存在
 ]
 for dir_name in dirs_to_create:
     os.makedirs(dir_name, exist_ok=True)
@@ -84,6 +85,8 @@ for dir_name in dirs_to_create:
 app.mount("/magazine_cards", StaticFiles(directory="magazine_cards"), name="magazine_cards")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.mount("/files/uploads", StaticFiles(directory="uploads"), name="files_uploads")
+# 添加server/src/magazine_cards目录的直接挂载
+app.mount("/server/src/magazine_cards", StaticFiles(directory="server/src/magazine_cards"), name="server_src_magazine_cards")
 
 # 创建输出目录
 os.makedirs("outputs", exist_ok=True)
@@ -637,11 +640,11 @@ async def generate_magazine_card(
             # 日志记录文件路径
             logger.info(f"杂志卡片生成完成: {response.file_path}")
             
-            # 处理文件路径，确保只返回相对路径
             # 从绝对路径中提取文件名
             file_name = os.path.basename(response.file_path)
-            # 构建包含src目录的相对路径
-            relative_path = f"/src/magazine_cards/{file_name}"
+            
+            # 使用根目录下的magazine_cards目录(已挂载为静态文件目录)
+            relative_path = f"/magazine_cards/{file_name}"
             
             logger.info(f"处理后的相对路径: {relative_path}")
             
@@ -763,6 +766,12 @@ def get_file(file_path: str):
         logger.info(f"文件找到(清理路径): {cleaned_path}")
         return FileResponse(cleaned_path)
     
+    # 尝试server/src目录下的路径 - 添加这个特殊处理
+    server_src_path = os.path.join("server", "src", cleaned_path)
+    if os.path.exists(server_src_path) and os.path.isfile(server_src_path):
+        logger.info(f"文件找到(server/src路径): {server_src_path}")
+        return FileResponse(server_src_path)
+    
     # 尝试src目录下的路径
     src_path = os.path.join("src", cleaned_path)
     if os.path.exists(src_path) and os.path.isfile(src_path):
@@ -781,6 +790,12 @@ def get_file(file_path: str):
         logger.info(f"文件找到(magazine_cards路径): {magazine_cards_path}")
         return FileResponse(magazine_cards_path)
     
+    # 尝试server/src/magazine_cards目录 - 添加这个特殊处理
+    server_magazine_path = os.path.join("server", "src", "magazine_cards", os.path.basename(cleaned_path))
+    if os.path.exists(server_magazine_path) and os.path.isfile(server_magazine_path):
+        logger.info(f"文件找到(server/src/magazine_cards路径): {server_magazine_path}")
+        return FileResponse(server_magazine_path)
+    
     # 尝试src/magazine_cards目录
     src_magazine_path = os.path.join("src", "magazine_cards", os.path.basename(cleaned_path))
     if os.path.exists(src_magazine_path) and os.path.isfile(src_magazine_path):
@@ -796,8 +811,8 @@ def get_file(file_path: str):
     # 输出调试信息
     logger.error(f"文件未找到: 原始路径={file_path}")
     logger.error(f"尝试路径: 绝对路径={absolute_path}, 清理路径={cleaned_path}")
-    logger.error(f"尝试路径: src路径={src_path}, outputs路径={outputs_path}")
-    logger.error(f"尝试路径: magazine_cards路径={magazine_cards_path}, src/magazine_cards路径={src_magazine_path}")
+    logger.error(f"尝试路径: server/src路径={server_src_path}, src路径={src_path}, outputs路径={outputs_path}")
+    logger.error(f"尝试路径: magazine_cards路径={magazine_cards_path}, server/src/magazine_cards路径={server_magazine_path}, src/magazine_cards路径={src_magazine_path}")
     logger.error(f"尝试路径: templates路径={templates_path}")
     logger.info(f"当前工作目录: {current_dir}")
     
