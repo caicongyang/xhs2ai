@@ -34,6 +34,7 @@ RUN mkdir -p generated_images
 RUN mkdir -p minimaxi_videos
 RUN mkdir -p videos
 RUN mkdir -p magazine_cards
+RUN mkdir -p uploads
 
 # Set proper permissions
 RUN chmod -R 755 /app
